@@ -8,7 +8,9 @@ export function AppLogo() {
         <Cat className="mb-[-5px]" />
         <Shirt className="mt-[-3px]" />
       </div>
-      <TypographyH1>fitgather</TypographyH1>
+      <TypographyH1>
+        <span className="text-primary">fit</span>gather
+      </TypographyH1>
     </div>
   );
 }
