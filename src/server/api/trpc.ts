@@ -6,11 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -25,9 +26,18 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const { getPermissions, getRoles, getUser, isAuthenticated } =
+    getKindeServerSession();
+  const user = await getUser();
+  const permissions = await getPermissions();
+  const roles = await getRoles();
+  const isAuthenticatedValue = await isAuthenticated();
+
+  const session = isAuthenticatedValue ? { user, permissions, roles } : null;
   return {
     db,
     ...opts,
+    session,
   };
 };
 
@@ -104,3 +114,20 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * This is the base piece to build queries and mutations that require a user to be logged in based on Kinde Auth.
+ */
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
