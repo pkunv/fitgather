@@ -7,10 +7,20 @@ import { Toaster } from "@/app/_components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
-  title: "",
-  description: "",
+  title: {
+    template: "%s / fitgather",
+    default: "fitgather",
+  },
+  alternates: {
+    canonical: "/",
+  },
+  description: "Web app for creating best outfits.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
-};
+  openGraph: {
+    siteName: "fitgather",
+    url: new URL(`https://${process.env.VERCEL_URL}`),
+  },
+} as Metadata;
 
 export default function RootLayout({
   children,
