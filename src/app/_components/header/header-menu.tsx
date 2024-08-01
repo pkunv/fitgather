@@ -1,15 +1,15 @@
-import { AppLogo } from "@/app/_components/app-logo";
+import { type HeaderLink } from "@/app/_components/header/_header";
+import { AppLogo } from "@/app/_components/header/app-logo";
 import { MenuItem } from "@/app/_components/header/menu-item";
 import { Button } from "@/app/_components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
-import { type Link } from "@/lib/links";
 
 export function HeaderMenu({
   headerLinks,
   sheetLinks,
 }: {
-  headerLinks: Link[];
-  sheetLinks: Link[];
+  headerLinks: HeaderLink[];
+  sheetLinks: HeaderLink[];
 }) {
   return (
     <>

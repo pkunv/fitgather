@@ -12,7 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-export type MappedIcon =
+export type HeaderIcon =
   | "Home"
   | "Search"
   | "LogIn"
@@ -25,12 +25,12 @@ export type MappedIcon =
   | "Cog"
   | "Plus";
 
-export function MappedIcon({
+export function HeaderIcon({
   icon,
   className,
   strokeWidth = 2,
 }: {
-  icon: MappedIcon;
+  icon: HeaderIcon;
   className?: string;
   strokeWidth?: number;
 }) {

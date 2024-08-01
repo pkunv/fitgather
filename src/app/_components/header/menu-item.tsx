@@ -1,8 +1,8 @@
 "use client";
 
-import { MappedIcon } from "@/app/_components/icon";
+import { type HeaderLink } from "@/app/_components/header/_header";
+import { HeaderIcon } from "@/app/_components/header/header-icon";
 import { buttonVariants } from "@/app/_components/ui/button";
-import type { Link as LinkType } from "@/lib/links";
 import { cn } from "@/lib/utils";
 import {
   LoginLink,
@@ -13,7 +13,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function MenuItem({ item }: { item: LinkType }) {
+export function MenuItem({ item }: { item: HeaderLink }) {
   const pathname = usePathname();
   const [active, setActive] = useState(
     `/${pathname.slice(1).split("/")[0]}` === item.path,
@@ -35,7 +35,7 @@ export function MenuItem({ item }: { item: LinkType }) {
           )}
         >
           {item.icon && (
-            <MappedIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
+            <HeaderIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
           )}
           {item.title}
         </Link>
@@ -49,7 +49,7 @@ export function MenuItem({ item }: { item: LinkType }) {
           )}
         >
           {item.icon && (
-            <MappedIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
+            <HeaderIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
           )}
           {item.title}
         </LoginLink>
@@ -63,7 +63,7 @@ export function MenuItem({ item }: { item: LinkType }) {
           )}
         >
           {item.icon && (
-            <MappedIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
+            <HeaderIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
           )}
           {item.title}
         </RegisterLink>
@@ -77,7 +77,7 @@ export function MenuItem({ item }: { item: LinkType }) {
           )}
         >
           {item.icon && (
-            <MappedIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
+            <HeaderIcon icon={item.icon} strokeWidth={active ? 2.5 : 2} />
           )}
           {item.title}
         </LogoutLink>
