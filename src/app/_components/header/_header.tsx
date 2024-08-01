@@ -61,7 +61,7 @@ export async function Header() {
   ].filter(Boolean) as HeaderLink[];
 
   return (
-    <header className="mx-auto flex w-full max-w-7xl flex-row justify-around gap-6 px-6 py-2 drop-shadow-sm">
+    <header className="mx-auto flex w-full max-w-6xl flex-row justify-between gap-6 px-6 py-2 drop-shadow-sm sm:px-0">
       <AppLogo />
       <HeaderMenu headerLinks={headerLinks} sheetLinks={sheetLinks} />
     </header>

@@ -10,7 +10,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 export const metadata: Metadata = {
   title: {
     template: "%s / fitgather",
-    default: "fitgather",
+    default: "Home / fitgather",
   },
   alternates: {
     canonical: "/",
@@ -33,7 +33,7 @@ export default function RootLayout({
           <Toaster />
           <div className="max-w-screen flex min-h-screen flex-col">
             <Header />
-            <main className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-6 py-6">
+            <main className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-6 sm:px-0">
               {children}
             </main>
           </div>

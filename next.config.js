@@ -18,6 +18,16 @@ const config = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      // Zalando images
+      {
+        protocol: "https",
+        hostname: "img01.ztat.net",
+      },
+      // Vinted images
+      {
+        protocol: "https",
+        hostname: "images1.vinted.net",
+      },
     ],
   },
 };
