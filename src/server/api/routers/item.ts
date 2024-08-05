@@ -20,7 +20,7 @@ export const itemRouter = createTRPCRouter({
                 brand: (
                   metadata.jsonld[0].brand.name as string
                 ).toLocaleLowerCase(),
-                title: metadata["og:title"] as string,
+                title: (metadata["og:title"] as string).split(" - Zalando")[0]!,
                 image: metadata["og:image"] as string,
                 price: parseInt(metadata.jsonld[0].offers[0].price as string),
                 currency: (

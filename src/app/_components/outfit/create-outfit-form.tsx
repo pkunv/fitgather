@@ -2,14 +2,26 @@
 
 import { CreateItemForm } from "@/app/_components/item/create-item-form";
 import { OutfitPiece } from "@/app/_components/outfit/outfit-piece";
+import { Badge } from "@/app/_components/ui/badge";
 import { Separator } from "@/app/_components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/_components/ui/table";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
+import Link from "next/link";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { type z } from "zod";
 
 const formSchema = outfitSchema.create;
 
 export function CreateOutfitForm() {
+  const capitalize = (s: string) => s && s[0]?.toUpperCase() + s.slice(1);
   const [outfit, setOutfit] = useState<z.infer<typeof formSchema>>({
     head: {
       main: null,
@@ -140,7 +152,7 @@ export function CreateOutfitForm() {
           </div>
         </div>
         <div className="col-span-full flex flex-row gap-6 sm:col-span-2">
-          <Separator orientation="vertical" />
+          <Separator orientation="vertical" className="hidden sm:block" />
           <div className="col-span-full flex flex-col gap-6 sm:col-span-2">
             <div className="flex flex-row gap-6">
               <CreateItemForm
@@ -152,6 +164,100 @@ export function CreateOutfitForm() {
               />
             </div>
             <Separator orientation="horizontal" />
+            <div className="flex flex-row gap-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Type</TableHead>
+                    <TableHead>Item</TableHead>
+                    <TableHead className="w-[150px] text-right">
+                      Price
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    outfit.head.main,
+                    outfit.top.main,
+                    outfit.bottom.main,
+                    outfit.shoes.main,
+                    ...((outfit.head.accessories as [] | null) ?? []),
+                    ...((outfit.top.accessories as [] | null) ?? []),
+                    ...((outfit.bottom.accessories as [] | null) ?? []),
+                    ...((outfit.shoes.accessories as [] | null) ?? []),
+                  ]
+                    .filter((item) => item !== null)
+                    .map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {capitalize(item.type)}
+                          {item.accessory === true && (
+                            <Badge variant={"outline"} className="ml-2 px-1">
+                              A
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Link
+                            href={item.url}
+                            target="_blank"
+                            className="underline"
+                          >
+                            {item.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {item.price} {item.currency}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+                {[
+                  outfit.head.main,
+                  outfit.top.main,
+                  outfit.bottom.main,
+                  outfit.shoes.main,
+                  ...((outfit.head.accessories as [] | null) ?? []),
+                  ...((outfit.top.accessories as [] | null) ?? []),
+                  ...((outfit.bottom.accessories as [] | null) ?? []),
+                  ...((outfit.shoes.accessories as [] | null) ?? []),
+                ].filter((item) => item !== null).length > 0 && (
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={2}>Total</TableCell>
+                      <TableCell className="text-right">
+                        {[
+                          outfit.head.main,
+                          outfit.top.main,
+                          outfit.bottom.main,
+                          outfit.shoes.main,
+                          ...((outfit.head.accessories as [] | null) ?? []),
+                          ...((outfit.top.accessories as [] | null) ?? []),
+                          ...((outfit.bottom.accessories as [] | null) ?? []),
+                          ...((outfit.shoes.accessories as [] | null) ?? []),
+                        ]
+                          .filter((item) => item !== null)
+                          .reduce((acc, val) => val.price + acc, 0)}{" "}
+                        {
+                          [
+                            outfit.head.main,
+                            outfit.top.main,
+                            outfit.bottom.main,
+                            outfit.shoes.main,
+                            ...((outfit.head.accessories as [] | null) ?? []),
+                            ...((outfit.top.accessories as [] | null) ?? []),
+                            ...((outfit.bottom.accessories as [] | null) ?? []),
+                            ...((outfit.shoes.accessories as [] | null) ?? []),
+                          ]
+                            .filter((item) => item !== null)
+                            .find((item) => item)?.currency
+                        }
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                )}
+              </Table>
+            </div>
           </div>
         </div>
       </div>
