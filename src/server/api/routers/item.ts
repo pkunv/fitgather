@@ -17,7 +17,6 @@ export const itemRouter = createTRPCRouter({
 
               return {
                 provider: this.name,
-                url: metadata.requestUrl as string,
                 brand: (
                   metadata.jsonld[0].brand.name as string
                 ).toLocaleLowerCase(),
@@ -64,6 +63,7 @@ export const itemRouter = createTRPCRouter({
         ...item,
         type: input.type,
         accessory: input.accessory,
+        url: input.url,
       };
     }),
 });
