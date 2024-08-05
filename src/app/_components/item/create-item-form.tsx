@@ -11,9 +11,11 @@ import {
   FormMessage,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import { api, RouterOutputs } from "@/trpc/react";
+import { Spinner } from "@/app/_components/ui/spinner";
+import { api, type RouterOutputs } from "@/trpc/react";
 import { itemSchema } from "@/trpc/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,19 +24,20 @@ import { type z } from "zod";
 const formSchema = itemSchema.create;
 
 export function CreateItemForm({
+  action,
   selectedPiece,
-  callback,
+  onItemCreate,
+  onItemDelete,
 }: {
-  selectedPiece: {
-    type: "head" | "top" | "bottom" | "shoes";
-    accessory: boolean;
-  } | null;
-  callback: (data: RouterOutputs["item"]["create"]) => void;
+  action: "create" | "update";
+  selectedPiece: z.infer<typeof itemSchema.select>;
+  onItemCreate: (data: RouterOutputs["item"]["create"]) => void;
+  onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      url: "",
+      url: selectedPiece?.url ?? "",
       type: selectedPiece?.type ?? undefined,
       accessory: selectedPiece?.accessory ?? undefined,
     },
@@ -44,7 +47,7 @@ export function CreateItemForm({
     onSuccess: async (data) => {
       toast.success("Your item has been added!");
       form.reset();
-      callback(data);
+      onItemCreate(data);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -60,6 +63,7 @@ export function CreateItemForm({
     console.log(selectedPiece);
     form.setValue("type", selectedPiece.type);
     form.setValue("accessory", selectedPiece.accessory);
+    if (selectedPiece.url) form.setValue("url", selectedPiece.url);
   }, [selectedPiece, form]);
 
   return (
@@ -82,11 +86,32 @@ export function CreateItemForm({
                 Other shops may still work though!
               </FormDescription>
               <FormMessage />
+              <FormMessage>{form.formState.errors.type?.message}</FormMessage>
             </FormItem>
           )}
         />
-        <div className="flex w-full justify-end">
-          <Button type="submit">Add</Button>
+        <div className="flex w-full justify-end gap-2">
+          {action === "update" && (
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => {
+                onItemDelete(selectedPiece);
+                form.reset();
+              }}
+            >
+              <Trash2 />
+            </Button>
+          )}
+          <Button type="submit">
+            {createItem.isPending ? (
+              <Spinner className="grayscale invert" />
+            ) : action === "update" ? (
+              "Update"
+            ) : (
+              "Add"
+            )}
+          </Button>
         </div>
       </form>
     </Form>

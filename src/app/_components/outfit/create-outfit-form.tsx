@@ -3,6 +3,11 @@
 import { CreateItemForm } from "@/app/_components/item/create-item-form";
 import { OutfitPiece } from "@/app/_components/outfit/outfit-piece";
 import { Badge } from "@/app/_components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+} from "@/app/_components/ui/dialog";
 import { Separator } from "@/app/_components/ui/separator";
 import {
   Table,
@@ -14,6 +19,7 @@ import {
   TableRow,
 } from "@/app/_components/ui/table";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
+import Image from "next/image";
 import Link from "next/link";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { type z } from "zod";
@@ -41,9 +47,23 @@ export function CreateOutfitForm() {
     },
   });
   const [selectedPiece, setSelectedPiece] =
-    useState<z.infer<typeof outfitSchema.select>>(null);
+    useState<z.infer<typeof itemSchema.select>>(null);
+  const [expandImage, setExpandImage] = useState<string | false>(false);
 
-  function addToOutfit({
+  function getOutfitItems(outfit: z.infer<typeof outfitSchema.create>) {
+    return [
+      outfit.head.main,
+      outfit.top.main,
+      outfit.bottom.main,
+      outfit.shoes.main,
+      ...((outfit.head.accessories as [] | null) ?? []),
+      ...((outfit.top.accessories as [] | null) ?? []),
+      ...((outfit.bottom.accessories as [] | null) ?? []),
+      ...((outfit.shoes.accessories as [] | null) ?? []),
+    ].filter((item) => item !== null);
+  }
+
+  function addItem({
     setState,
     item,
   }: {
@@ -66,88 +86,119 @@ export function CreateOutfitForm() {
     });
   }
 
+  function deleteItem({
+    setState,
+    item,
+  }: {
+    setState: Dispatch<SetStateAction<z.infer<typeof outfitSchema.create>>>;
+    item: z.infer<typeof itemSchema.get>;
+  }) {
+    if (!item) return;
+    setState((prev) => {
+      return {
+        ...prev,
+        [item.type]: item.accessory
+          ? {
+              main: prev[item.type].main,
+              accessories: prev[item.type].accessories
+                ? (prev[item.type].accessories as [] | null)?.filter(
+                    (acc) => acc !== item,
+                  )
+                : null,
+            }
+          : { accessories: prev[item.type].accessories, main: null },
+      };
+    });
+  }
+
   return (
     <>
+      <Dialog
+        open={expandImage !== false}
+        onOpenChange={() => {
+          setExpandImage(false);
+        }}
+      >
+        <DialogContent className="min-h-96">
+          <DialogHeader>
+            <Image
+              src={expandImage as string}
+              width={540}
+              height={540}
+              alt="Expanded image"
+            />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
-        <div className="col-span-full grid w-full grid-cols-3 grid-rows-4 gap-4 sm:col-span-3">
+        <div className="col-span-full grid h-fit w-full grid-cols-3 grid-rows-4 gap-4 bg-background sm:col-span-3">
           <div className="col-start-2 row-start-1">
             <OutfitPiece
               type="head"
-              image={outfit.head.main?.image}
+              accessory={false}
+              item={outfit.head.main}
               active={
                 selectedPiece?.type === "head" && !selectedPiece?.accessory
               }
-              onClick={() => {
-                setSelectedPiece({ type: "head", accessory: false });
-              }}
+              onClick={setSelectedPiece}
             />
           </div>
           <div className="col-start-2 row-start-2">
             <OutfitPiece
               type="top"
-              image={outfit.top.main?.image}
+              accessory={false}
+              item={outfit.top.main}
               active={
                 selectedPiece?.type === "top" && !selectedPiece?.accessory
               }
-              onClick={() => {
-                setSelectedPiece({ type: "top", accessory: false });
-              }}
+              onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
           <div className="col-start-2 row-start-3">
             <OutfitPiece
               type="bottom"
-              image={outfit.bottom.main?.image}
+              item={outfit.bottom.main}
+              accessory={false}
               active={
                 selectedPiece?.type === "bottom" && !selectedPiece?.accessory
               }
-              onClick={() => {
-                setSelectedPiece({ type: "bottom", accessory: false });
-              }}
+              onClick={setSelectedPiece}
             />
           </div>
           <div className="col-start-2 row-start-4">
             <OutfitPiece
               type="shoes"
-              image={outfit.shoes.main?.image}
+              accessory={false}
+              item={outfit.shoes.main}
               active={
                 selectedPiece?.type === "shoes" && !selectedPiece?.accessory
               }
-              onClick={() => {
-                setSelectedPiece({ type: "shoes", accessory: false });
-              }}
+              onClick={setSelectedPiece}
             />
           </div>
           <div className="col-start-3 row-start-2">
             <OutfitPiece
-              type="accessory"
+              type="top"
+              accessory={true}
               active={selectedPiece?.accessory && selectedPiece?.type === "top"}
-              image={
-                outfit.top.accessories !== null &&
-                outfit.top.accessories.length > 0
-                  ? outfit.top.accessories[0]!.image
-                  : undefined
+              item={
+                outfit.top.accessories?.[0] ? outfit.top.accessories[0] : null
               }
-              onClick={() => {
-                setSelectedPiece({ type: "top", accessory: true });
-              }}
+              onClick={setSelectedPiece}
             />
           </div>
           <div className="col-start-3 row-start-1">
             <OutfitPiece
-              type="accessory"
+              type="head"
+              accessory={true}
               active={
                 selectedPiece?.accessory && selectedPiece?.type === "head"
               }
-              image={
-                outfit.head.accessories !== null &&
-                outfit.head.accessories.length > 0
-                  ? outfit.head.accessories[0]!.image
-                  : undefined
+              item={
+                outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
               }
-              onClick={() => {
-                setSelectedPiece({ type: "head", accessory: true });
-              }}
+              onClick={setSelectedPiece}
             />
           </div>
         </div>
@@ -156,15 +207,28 @@ export function CreateOutfitForm() {
           <div className="col-span-full flex flex-col gap-6 sm:col-span-2">
             <div className="flex flex-row gap-6">
               <CreateItemForm
+                action={
+                  selectedPiece && selectedPiece.url !== null
+                    ? "update"
+                    : "create"
+                }
                 selectedPiece={selectedPiece}
-                callback={(data) => {
+                onItemCreate={(data) => {
                   if (!selectedPiece) return;
-                  addToOutfit({ setState: setOutfit, item: data });
+                  addItem({ setState: setOutfit, item: data });
+                }}
+                onItemDelete={(data) => {
+                  if (!selectedPiece) return;
+                  const item = getOutfitItems(outfit).find(
+                    (item) => item.url === data?.url,
+                  );
+                  if (!item) return;
+                  deleteItem({ setState: setOutfit, item });
                 }}
               />
             </div>
             <Separator orientation="horizontal" />
-            <div className="flex flex-row gap-6">
+            <div className="flex min-h-96 flex-row gap-6">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -192,7 +256,7 @@ export function CreateOutfitForm() {
                         <TableCell>
                           {capitalize(item.type)}
                           {item.accessory === true && (
-                            <Badge variant={"outline"} className="ml-2 px-1">
+                            <Badge variant={"secondary"} className="ml-2 px-1">
                               A
                             </Badge>
                           )}

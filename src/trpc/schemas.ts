@@ -1,8 +1,12 @@
 import { z } from "zod";
 
+export const itemTypeSchema = z.enum(["head", "top", "bottom", "shoes"], {
+  message: "Type of clothing item is required.",
+});
+
 export const itemSchema = {
   get: z.object({
-    type: z.enum(["head", "top", "bottom", "shoes"]),
+    type: itemTypeSchema,
     accessory: z.boolean(),
     provider: z.string(),
     url: z.string().url(),
@@ -16,9 +20,16 @@ export const itemSchema = {
     url: z
       .string({ message: "URL address of clothing item is required." })
       .url({ message: "URL address of clothing item is invalid." }),
-    type: z.enum(["head", "top", "bottom", "shoes"]),
+    type: itemTypeSchema,
     accessory: z.boolean(),
   }),
+  select: z
+    .object({
+      url: z.string().url().nullable(),
+      type: itemTypeSchema,
+      accessory: z.boolean(),
+    })
+    .nullable(),
 };
 
 export const outfitSchema = {
@@ -43,10 +54,4 @@ export const outfitSchema = {
     },
     { message: "You need to add at least one item to your outfit." },
   ),
-  select: z
-    .object({
-      type: z.enum(["head", "top", "bottom", "shoes"]),
-      accessory: z.boolean(),
-    })
-    .nullable(),
 };
