@@ -164,6 +164,7 @@ export function CreateOutfitForm() {
                 selectedPiece?.type === "bottom" && !selectedPiece?.accessory
               }
               onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
           <div className="col-start-2 row-start-4">
@@ -175,6 +176,7 @@ export function CreateOutfitForm() {
                 selectedPiece?.type === "shoes" && !selectedPiece?.accessory
               }
               onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
           <div className="col-start-3 row-start-2">
@@ -186,6 +188,7 @@ export function CreateOutfitForm() {
                 outfit.top.accessories?.[0] ? outfit.top.accessories[0] : null
               }
               onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
           <div className="col-start-3 row-start-1">
@@ -199,6 +202,7 @@ export function CreateOutfitForm() {
                 outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
               }
               onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
         </div>
