@@ -1,4 +1,4 @@
-import { TypographyH1 } from "@/app/_components/ui/typography";
+import { TypographyH1 } from "@/components/ui/typography";
 import { Cat, Shirt } from "lucide-react";
 
 export function AppLogo() {

@@ -1,8 +1,8 @@
 "use client";
 
-import { type HeaderLink } from "@/app/_components/header/_header";
-import { HeaderIcon } from "@/app/_components/header/header-icon";
-import { buttonVariants } from "@/app/_components/ui/button";
+import { type HeaderLink } from "@/components/header/_header";
+import { HeaderIcon } from "@/components/header/header-icon";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   LoginLink,

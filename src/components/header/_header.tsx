@@ -1,7 +1,7 @@
-import { AppLogo } from "@/app/_components/header/app-logo";
-import { type HeaderIcon } from "@/app/_components/header/header-icon";
-import { HeaderMenu } from "@/app/_components/header/header-menu";
-import { type buttonVariants } from "@/app/_components/ui/button";
+import { AppLogo } from "@/components/header/app-logo";
+import { type HeaderIcon } from "@/components/header/header-icon";
+import { HeaderMenu } from "@/components/header/header-menu";
+import { type buttonVariants } from "@/components/ui/button";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export type HeaderLink = {

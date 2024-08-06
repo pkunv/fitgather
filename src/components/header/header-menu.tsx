@@ -1,8 +1,8 @@
-import { type HeaderLink } from "@/app/_components/header/_header";
-import { AppLogo } from "@/app/_components/header/app-logo";
-import { MenuItem } from "@/app/_components/header/menu-item";
-import { Button } from "@/app/_components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
+import { type HeaderLink } from "@/components/header/_header";
+import { AppLogo } from "@/components/header/app-logo";
+import { MenuItem } from "@/components/header/menu-item";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function HeaderMenu({
   headerLinks,

@@ -3,8 +3,8 @@ import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
-import { Header } from "@/app/_components/header/_header";
-import { Toaster } from "@/app/_components/ui/sonner";
+import { Header } from "@/components/header/_header";
+import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/app/_components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type itemSchema, type itemTypeSchema } from "@/trpc/schemas";
 import { trousers } from "@lucide/lab";

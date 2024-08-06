@@ -1,5 +1,5 @@
-import { CreateOutfitForm } from "@/app/_components/outfit/create-outfit-form";
-import { TypographyH1 } from "@/app/_components/ui/typography";
+import { CreateOutfitForm } from "@/components/outfit/create-outfit-form";
+import { TypographyH1 } from "@/components/ui/typography";
 
 export default async function Home() {
   return (

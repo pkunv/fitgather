@@ -1,14 +1,10 @@
 "use client";
 
-import { CreateItemForm } from "@/app/_components/item/create-item-form";
-import { OutfitPiece } from "@/app/_components/outfit/outfit-piece";
-import { Badge } from "@/app/_components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/app/_components/ui/dialog";
-import { Separator } from "@/app/_components/ui/separator";
+import { CreateItemForm } from "@/components/item/create-item-form";
+import { OutfitPiece } from "@/components/outfit/outfit-piece";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -17,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/_components/ui/table";
+} from "@/components/ui/table";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
 import Image from "next/image";
 import Link from "next/link";
