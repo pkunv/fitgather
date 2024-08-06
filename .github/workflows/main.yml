@@ -24,7 +24,7 @@ jobs:
           echo KINDE_ISSUER_URL=${{ secrets.KINDE_ISSUER_URL }} >> .env
           echo KINDE_POST_LOGIN_REDIRECT_URL=${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }} >> .env
           echo KINDE_POST_LOGOUT_REDIRECT_URL=${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }} >> .env
-          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }}" >> .env
+          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }} >> .env
           cat .env 
     - name: Install dependencies
       run: npm ci
