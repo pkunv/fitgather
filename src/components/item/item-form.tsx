@@ -23,7 +23,7 @@ import { type z } from "zod";
 
 const formSchema = itemSchema.create;
 
-export function CreateItemForm({
+export function ItemForm({
   action,
   selectedPiece,
   onItemCreate,
@@ -64,6 +64,7 @@ export function CreateItemForm({
     form.setValue("type", selectedPiece.type);
     form.setValue("accessory", selectedPiece.accessory);
     if (selectedPiece.url) form.setValue("url", selectedPiece.url);
+    if (!selectedPiece.url) form.setValue("url", "");
   }, [selectedPiece, form]);
 
   return (

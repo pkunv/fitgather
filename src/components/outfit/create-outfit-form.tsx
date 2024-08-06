@@ -1,29 +1,18 @@
 "use client";
 
-import { CreateItemForm } from "@/components/item/create-item-form";
+import { ItemForm } from "@/components/item/item-form";
 import { OutfitPiece } from "@/components/outfit/outfit-piece";
-import { Badge } from "@/components/ui/badge";
+import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
 import Image from "next/image";
-import Link from "next/link";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { type z } from "zod";
 
 const formSchema = outfitSchema.create;
 
 export function CreateOutfitForm() {
-  const capitalize = (s: string) => s && s[0]?.toUpperCase() + s.slice(1);
   const [outfit, setOutfit] = useState<z.infer<typeof formSchema>>({
     head: {
       main: null,
@@ -206,7 +195,7 @@ export function CreateOutfitForm() {
           <Separator orientation="vertical" className="hidden sm:block" />
           <div className="col-span-full flex flex-col gap-6 sm:col-span-2">
             <div className="flex flex-row gap-6">
-              <CreateItemForm
+              <ItemForm
                 action={
                   selectedPiece && selectedPiece.url !== null
                     ? "update"
@@ -216,6 +205,11 @@ export function CreateOutfitForm() {
                 onItemCreate={(data) => {
                   if (!selectedPiece) return;
                   addItem({ setState: setOutfit, item: data });
+                  setSelectedPiece({
+                    type: data.type,
+                    accessory: data.accessory,
+                    url: data.url,
+                  });
                 }}
                 onItemDelete={(data) => {
                   if (!selectedPiece) return;
@@ -224,103 +218,13 @@ export function CreateOutfitForm() {
                   );
                   if (!item) return;
                   deleteItem({ setState: setOutfit, item });
+                  setSelectedPiece(null);
                 }}
               />
             </div>
             <Separator orientation="horizontal" />
             <div className="flex min-h-96 flex-row gap-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Type</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead className="w-[150px] text-right">
-                      Price
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {[
-                    outfit.head.main,
-                    outfit.top.main,
-                    outfit.bottom.main,
-                    outfit.shoes.main,
-                    ...((outfit.head.accessories as [] | null) ?? []),
-                    ...((outfit.top.accessories as [] | null) ?? []),
-                    ...((outfit.bottom.accessories as [] | null) ?? []),
-                    ...((outfit.shoes.accessories as [] | null) ?? []),
-                  ]
-                    .filter((item) => item !== null)
-                    .map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {capitalize(item.type)}
-                          {item.accessory === true && (
-                            <Badge variant={"secondary"} className="ml-2 px-1">
-                              A
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={item.url}
-                            target="_blank"
-                            className="underline"
-                          >
-                            {item.title}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {item.price} {item.currency}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-                {[
-                  outfit.head.main,
-                  outfit.top.main,
-                  outfit.bottom.main,
-                  outfit.shoes.main,
-                  ...((outfit.head.accessories as [] | null) ?? []),
-                  ...((outfit.top.accessories as [] | null) ?? []),
-                  ...((outfit.bottom.accessories as [] | null) ?? []),
-                  ...((outfit.shoes.accessories as [] | null) ?? []),
-                ].filter((item) => item !== null).length > 0 && (
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={2}>Total</TableCell>
-                      <TableCell className="text-right">
-                        {[
-                          outfit.head.main,
-                          outfit.top.main,
-                          outfit.bottom.main,
-                          outfit.shoes.main,
-                          ...((outfit.head.accessories as [] | null) ?? []),
-                          ...((outfit.top.accessories as [] | null) ?? []),
-                          ...((outfit.bottom.accessories as [] | null) ?? []),
-                          ...((outfit.shoes.accessories as [] | null) ?? []),
-                        ]
-                          .filter((item) => item !== null)
-                          .reduce((acc, val) => val.price + acc, 0)}{" "}
-                        {
-                          [
-                            outfit.head.main,
-                            outfit.top.main,
-                            outfit.bottom.main,
-                            outfit.shoes.main,
-                            ...((outfit.head.accessories as [] | null) ?? []),
-                            ...((outfit.top.accessories as [] | null) ?? []),
-                            ...((outfit.bottom.accessories as [] | null) ?? []),
-                            ...((outfit.shoes.accessories as [] | null) ?? []),
-                          ]
-                            .filter((item) => item !== null)
-                            .find((item) => item)?.currency
-                        }
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
-                )}
-              </Table>
+              <OutfitSummaryTable items={getOutfitItems(outfit)} />
             </div>
           </div>
         </div>
