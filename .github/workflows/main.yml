@@ -16,16 +16,16 @@ jobs:
     - name: Create .env file
       uses: SpicyPizza/create-envfile@v2.0.3
       with:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-        E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-        KINDE_CLIENT_ID: ${{ secrets.KINDE_CLIENT_ID }}
-        KINDE_CLIENT_SECRET: ${{ secrets.KINDE_CLIENT_SECRET }}
-        KINDE_ISSUER_URL: ${{ secrets.KINDE_ISSUER_URL }}
-        KINDE_POST_LOGIN_REDIRECT_URL: ${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }}
-        KINDE_POST_LOGOUT_REDIRECT_URL: ${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }}
-        KINDE_SITE_URL: ${{ secrets.KINDE_SITE_URL }}
-        SKIP_ENV_VALIDATION: true
+        envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        envkey_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+        envkey_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+        envkey_KINDE_CLIENT_ID: ${{ secrets.KINDE_CLIENT_ID }}
+        envkey_KINDE_CLIENT_SECRET: ${{ secrets.KINDE_CLIENT_SECRET }}
+        envkey_KINDE_ISSUER_URL: ${{ secrets.KINDE_ISSUER_URL }}
+        envkey_KINDE_POST_LOGIN_REDIRECT_URL: ${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }}
+        envkey_KINDE_POST_LOGOUT_REDIRECT_URL: ${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }}
+        envkey_KINDE_SITE_URL: ${{ secrets.KINDE_SITE_URL }}
+        envkey_SKIP_ENV_VALIDATION: true
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
