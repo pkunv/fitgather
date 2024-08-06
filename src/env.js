@@ -17,8 +17,6 @@ export const env = createEnv({
     KINDE_SITE_URL: z.string().url(),
     KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url(),
     KINDE_POST_LOGIN_REDIRECT_URL: z.string().url(),
-    E2E_USERNAME: z.string(),
-    E2E_PASSWORD: z.string(),
   },
 
   /**
@@ -43,8 +41,6 @@ export const env = createEnv({
     KINDE_SITE_URL: process.env.KINDE_SITE_URL,
     KINDE_POST_LOGOUT_REDIRECT_URL: process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
     KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
-    E2E_USERNAME: process.env.E2E_USERNAME,
-    E2E_PASSWORD: process.env.E2E_PASSWORD,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
