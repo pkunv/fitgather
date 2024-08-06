@@ -16,15 +16,15 @@ jobs:
     - name: 'Create env file'
       run: |
           touch .env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-          echo E2E_PASSWORD=${{ secrets.E2E_PASSWORD }} >> .env
-          echo E2E_USERNAME=${{ secrets.E2E_USERNAME }} >> .env
-          echo KINDE_CLIENT_ID=${{ secrets.KINDE_CLIENT_ID }} >> .env
-          echo KINDE_CLIENT_SECRET=${{ secrets.KINDE_CLIENT_SECRET }} >> .env
-          echo KINDE_ISSUER_URL=${{ secrets.KINDE_ISSUER_URL }} >> .env
-          echo KINDE_POST_LOGIN_REDIRECT_URL=${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }} >> .env
-          echo KINDE_POST_LOGOUT_REDIRECT_URL=${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }} >> .env
-          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }} >> .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > .env
+          echo E2E_PASSWORD=${{ secrets.E2E_PASSWORD }} > .env
+          echo E2E_USERNAME=${{ secrets.E2E_USERNAME }} > .env
+          echo KINDE_CLIENT_ID=${{ secrets.KINDE_CLIENT_ID }} > .env
+          echo KINDE_CLIENT_SECRET=${{ secrets.KINDE_CLIENT_SECRET }} > .env
+          echo KINDE_ISSUER_URL=${{ secrets.KINDE_ISSUER_URL }} > .env
+          echo KINDE_POST_LOGIN_REDIRECT_URL=${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }} > .env
+          echo KINDE_POST_LOGOUT_REDIRECT_URL=${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }} > .env
+          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }} > .env
           cat .env 
     - name: Install dependencies
       run: npm ci
