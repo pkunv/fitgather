@@ -31,6 +31,8 @@ jobs:
       run: npm ci
     - name: Generate Prisma
       run: npm run postinstall
+    - name: Push Prisma
+      run: npm run db:push
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
