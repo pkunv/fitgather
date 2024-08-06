@@ -116,7 +116,8 @@ export function CreateOutfitForm() {
         </DialogContent>
       </Dialog>
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
-        <div className="col-span-full grid h-fit w-full grid-cols-3 grid-rows-4 gap-4 bg-background sm:col-span-3">
+        <div className="col-span-full grid h-fit w-full grid-cols-3 grid-rows-4 gap-4 justify-self-end bg-background sm:col-span-3">
+          {/* MAIN ITEMS TOP TO BOTTOM */}
           <div className="col-start-2 row-start-1">
             <OutfitPiece
               type="head"
@@ -126,6 +127,7 @@ export function CreateOutfitForm() {
                 selectedPiece?.type === "head" && !selectedPiece?.accessory
               }
               onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
           <div className="col-start-2 row-start-2">
@@ -164,13 +166,19 @@ export function CreateOutfitForm() {
               onExpandImage={(url) => setExpandImage(url)}
             />
           </div>
-          <div className="col-start-3 row-start-2">
+          {/* ACCESSORIES HEAD LEFT TO RIGHT */}
+          <div className="col-start-1 row-start-1">
             <OutfitPiece
-              type="top"
+              type="head"
               accessory={true}
-              active={selectedPiece?.accessory && selectedPiece?.type === "top"}
+              accessoryIndex={0}
+              active={
+                selectedPiece?.accessory &&
+                selectedPiece?.type === "head" &&
+                selectedPiece.accessoryIndex === 1
+              }
               item={
-                outfit.top.accessories?.[0] ? outfit.top.accessories[0] : null
+                outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
               }
               onClick={setSelectedPiece}
               onExpandImage={(url) => setExpandImage(url)}
@@ -180,11 +188,49 @@ export function CreateOutfitForm() {
             <OutfitPiece
               type="head"
               accessory={true}
+              accessoryIndex={1}
               active={
-                selectedPiece?.accessory && selectedPiece?.type === "head"
+                selectedPiece?.accessory &&
+                selectedPiece?.type === "head" &&
+                selectedPiece.accessoryIndex === 1
               }
               item={
-                outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
+                outfit.head.accessories?.[1] ? outfit.head.accessories[1] : null
+              }
+              onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
+            />
+          </div>
+          {/* ACCESSORIES TOP LEFT TO RIGHT */}
+          <div className="col-start-1 row-start-2">
+            <OutfitPiece
+              type="top"
+              accessory={true}
+              accessoryIndex={0}
+              active={
+                selectedPiece?.accessory &&
+                selectedPiece?.type === "top" &&
+                selectedPiece.accessoryIndex === 0
+              }
+              item={
+                outfit.top.accessories?.[0] ? outfit.top.accessories[0] : null
+              }
+              onClick={setSelectedPiece}
+              onExpandImage={(url) => setExpandImage(url)}
+            />
+          </div>
+          <div className="col-start-3 row-start-2">
+            <OutfitPiece
+              type="top"
+              accessory={true}
+              accessoryIndex={1}
+              active={
+                selectedPiece?.accessory &&
+                selectedPiece?.type === "top" &&
+                selectedPiece.accessoryIndex === 1
+              }
+              item={
+                outfit.top.accessories?.[1] ? outfit.top.accessories[1] : null
               }
               onClick={setSelectedPiece}
               onExpandImage={(url) => setExpandImage(url)}

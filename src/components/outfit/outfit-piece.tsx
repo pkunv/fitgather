@@ -10,6 +10,7 @@ import { type z } from "zod";
 
 export function OutfitPiece({
   accessory,
+  accessoryIndex,
   type,
   item,
   active,
@@ -17,6 +18,7 @@ export function OutfitPiece({
   onExpandImage,
 }: {
   accessory: boolean;
+  accessoryIndex?: number;
   type: z.infer<typeof itemTypeSchema>;
   item: z.infer<typeof itemSchema.get> | null;
   active?: boolean;
@@ -28,6 +30,7 @@ export function OutfitPiece({
       type: item?.type ?? type,
       accessory: accessory,
       url: item?.url ?? null,
+      accessoryIndex: accessoryIndex ?? undefined,
     };
     onClick && onClick(data);
   };
@@ -35,8 +38,9 @@ export function OutfitPiece({
     <Button
       onClick={onClickHandler}
       className={cn(
-        "relative flex h-28 w-full items-center justify-center rounded-lg border-2 transition-all",
+        "relative flex h-28 w-3/4 items-center justify-center rounded-lg border-2 transition-all",
         active ? "border-primary" : "border-gray-200",
+        accessory && !item && !active && "opacity-50 hover:opacity-100",
       )}
       variant={"ghost"}
       aria-label={`${type} clothing item${accessory ? " accessory" : ""} button`}

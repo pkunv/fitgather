@@ -28,6 +28,7 @@ export const itemSchema = {
       url: z.string().url().nullable(),
       type: itemTypeSchema,
       accessory: z.boolean(),
+      accessoryIndex: z.number().optional(),
     })
     .nullable(),
 };
