@@ -10,17 +10,6 @@ export const userRouter = createTRPCRouter({
     return ctx.db.user.upsert({
       where: {
         id: ctx.session.user.id,
-        // prevent unnecessary updates
-        OR: [
-          {
-            lastSeenAt: {
-              lte: new Date(new Date().getTime() - 1000 * 60 * 60 * 1),
-            },
-          },
-          {
-            lastSeenAt: null,
-          },
-        ],
       },
       // we update only email, picutre, and lastSeenAt date as this procedure is called on every signIn
       update: {

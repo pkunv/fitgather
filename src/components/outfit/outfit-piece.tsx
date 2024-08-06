@@ -39,6 +39,7 @@ export function OutfitPiece({
         active ? "border-primary" : "border-gray-200",
       )}
       variant={"ghost"}
+      aria-label={`${type} clothing item${accessory ? " accessory" : ""} button`}
     >
       {item && (
         <Button
@@ -57,7 +58,12 @@ export function OutfitPiece({
       {item && (
         <Image
           src={item.image}
-          alt={item.type}
+          alt={
+            item.type +
+            " clothing item" +
+            (accessory ? " accessory" : "") +
+            " image"
+          }
           width={64}
           height={64}
           objectFit="cover"
