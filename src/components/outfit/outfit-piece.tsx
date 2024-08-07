@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type itemSchema, type itemTypeSchema } from "@/trpc/schemas";
 import { trousers } from "@lucide/lab";
@@ -35,14 +35,14 @@ export function OutfitPiece({
     onClick && onClick(data);
   };
   return (
-    <Button
+    <div
       onClick={onClickHandler}
       className={cn(
-        "relative flex h-28 w-3/4 items-center justify-center rounded-lg border-2 transition-all",
+        buttonVariants({ variant: "ghost" }),
+        "relative flex h-28 w-3/4 items-center justify-center rounded-lg border-2 transition-all hover:cursor-pointer",
         active ? "border-primary" : "border-gray-200",
         accessory && !item && !active && "opacity-50 hover:opacity-100",
       )}
-      variant={"ghost"}
       aria-label={`${type} clothing item${accessory ? " accessory" : ""} button`}
     >
       {item && (
@@ -79,6 +79,6 @@ export function OutfitPiece({
       {!item && type === "bottom" && <Icon iconNode={trousers} size={36} />}
       {!item && type === "shoes" && <Footprints size={36} />}
       {!item && accessory && <Plus size={12} />}
-    </Button>
+    </div>
   );
 }

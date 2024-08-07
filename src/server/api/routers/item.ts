@@ -7,7 +7,7 @@ import urlMetadata from "url-metadata";
 export const itemRouter = createTRPCRouter({
   create: publicProcedure
     .input(itemSchema.create)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       function resolveItem(metadata: urlMetadata.Result) {
         const providers = [
           {
@@ -66,6 +66,15 @@ export const itemRouter = createTRPCRouter({
         const metadata = await urlMetadata(input.url);
 
         const item = resolveItem(metadata);
+
+        // as a security measure insert a record to db
+        // to confirm later (while creating an outfit) that the item URL is valid
+        // do nothing if the resolved item with this url is already in the db
+        await ctx.db.resolvedItem.upsert({
+          where: { url: input.url },
+          create: { url: input.url, provider: item.provider },
+          update: {},
+        });
 
         return {
           ...item,
