@@ -47,6 +47,7 @@ export const outfitRouter = createTRPCRouter({
       return {
         name: outfit.name,
         user: outfit.user,
+        createdAt: outfit.createdAt,
         outfit: getOutfitFromItems(
           outfit.items.map(
             (item) => item.item as z.infer<typeof itemSchema.get>,

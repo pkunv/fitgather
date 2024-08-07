@@ -5,6 +5,7 @@ import { Outfit } from "@/components/outfit/outfit";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { TypographyMuted } from "@/components/ui/typography";
@@ -71,6 +72,7 @@ export function OutfitForm({
     onSuccess: async (data) => {
       toast.success(`Your outfit has been created!`);
       localStorage.removeItem("outfit");
+      router.push(`/outfits/${data.slug}`);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -126,11 +128,15 @@ export function OutfitForm({
               )}
               {user && (
                 <>
-                  <Input
-                    placeholder="Untitled outfit"
-                    ref={inputRef}
-                    defaultValue={data?.name ? data.name : undefined}
-                  />
+                  <div className="flex flex-col gap-3">
+                    <Label>Outfit name</Label>
+                    <Input
+                      placeholder="Untitled outfit"
+                      ref={inputRef}
+                      defaultValue={data?.name ? data.name : undefined}
+                    />
+                  </div>
+
                   <Button
                     className="w-full"
                     disabled={getOutfitItems(outfit).length === 0}
