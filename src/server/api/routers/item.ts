@@ -13,35 +13,39 @@ export const itemRouter = createTRPCRouter({
           {
             name: "zalando",
             resolve: function (metadata: urlMetadata.Result) {
-              if (!metadata.jsonld) throw new Error("No JSON-LD found");
+              const provider = this.name;
+              const brand = (
+                metadata.jsonld[0].brand.name as string
+              ).toLocaleLowerCase();
+              const title = (metadata["og:title"] as string).split(
+                " - Zalando",
+              )[0]!;
+              const image = metadata["og:image"] as string;
+              const price = parseInt(
+                metadata.jsonld[0].offers[0].price as string,
+              );
+              const currency = (
+                metadata.jsonld[0].offers[0].priceCurrency as string
+              ).toLocaleLowerCase();
 
-              return {
-                provider: this.name,
-                brand: (
-                  metadata.jsonld[0].brand.name as string
-                ).toLocaleLowerCase(),
-                title: (metadata["og:title"] as string).split(" - Zalando")[0]!,
-                image: metadata["og:image"] as string,
-                price: parseInt(metadata.jsonld[0].offers[0].price as string),
-                currency: (
-                  metadata.jsonld[0].offers[0].priceCurrency as string
-                ).toLocaleLowerCase(),
-              };
+              return { provider, brand, title, image, price, currency };
             },
           },
           {
             name: "vinted",
             resolve: function (metadata: urlMetadata.Result) {
-              return {
-                provider: this.name,
-                brand: (metadata["og:brand"] as string).toLocaleLowerCase(),
-                title: metadata["og:title"] as string,
-                image: metadata["og:image"] as string,
-                price: parseInt(metadata["og:price:amount"] as string),
-                currency: (
-                  metadata["og:price:currency"] as string
-                ).toLocaleLowerCase(),
-              };
+              const provider = this.name;
+              const brand = (
+                metadata["og:brand"] as string
+              ).toLocaleLowerCase();
+              const title = metadata["og:title"] as string;
+              const image = metadata["og:image"] as string;
+              const price = parseInt(metadata["og:price:amount"] as string);
+              const currency = (
+                metadata["og:price:currency"] as string
+              ).toLocaleLowerCase();
+
+              return { provider, brand, title, image, price, currency };
             },
           },
         ];
@@ -49,21 +53,33 @@ export const itemRouter = createTRPCRouter({
         const provider = providers.find((provider) =>
           (metadata.requestUrl as string).includes(provider.name),
         );
-        if (!provider) return null;
+        if (!provider)
+          throw new Error("No provider found for this item!", {
+            cause: "No provider found for this item!",
+          });
 
         return provider.resolve(metadata);
       }
 
-      const metadata = await urlMetadata(input.url);
+      // if any error occurs, it will be catched and a friendly error message will be returned
+      try {
+        const metadata = await urlMetadata(input.url);
 
-      const item = resolveItem(metadata);
-      if (!item) throw new TRPCError({ code: "NOT_FOUND" });
+        const item = resolveItem(metadata);
 
-      return {
-        ...item,
-        type: input.type,
-        accessory: input.accessory,
-        url: input.url,
-      };
+        return {
+          ...item,
+          type: input.type,
+          accessory: input.accessory,
+          url: input.url,
+        };
+      } catch (error) {
+        console.log("Fetching item failed: ", error);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No clothing item found!",
+          cause: error,
+        });
+      }
     }),
 });
