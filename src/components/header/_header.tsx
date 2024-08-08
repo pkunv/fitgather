@@ -32,7 +32,7 @@ export async function Header() {
       title: "My outfits",
       button: { variant: "default" },
       type: "path",
-      path: "#",
+      path: "/outfits",
     },
     isUserAuthenticated && {
       title: "Sign out",
@@ -52,7 +52,7 @@ export async function Header() {
     isUserAuthenticated && {
       title: "My outfits",
       type: "path",
-      path: "#",
+      path: "/outfits",
     },
     isUserAuthenticated && {
       title: "Sign out",
