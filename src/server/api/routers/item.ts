@@ -37,9 +37,9 @@ export const itemRouter = createTRPCRouter({
             name: "vinted",
             resolve: function (metadata: urlMetadata.Result) {
               const provider = this.name;
-              const brand = (
-                metadata["og:brand"] as string
-              ).toLocaleLowerCase();
+              const brand = metadata["og:brand"]
+                ? (metadata["og:brand"] as string).toLocaleLowerCase()
+                : "unknown";
               const title = metadata["og:title"] as string;
               const image = metadata["og:image"] as string;
               const price = parseInt(metadata["og:price:amount"] as string);
