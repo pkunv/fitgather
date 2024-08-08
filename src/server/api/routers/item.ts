@@ -20,7 +20,9 @@ export const itemRouter = createTRPCRouter({
               const title = (metadata["og:title"] as string).split(
                 " - Zalando",
               )[0]!;
-              const image = metadata["og:image"] as string;
+              // get without search params to get full size image
+              const image = (metadata["og:image"] as string).split("?")[0];
+              if (!image) throw new Error("Couldn't find proper image URL.");
               const price = parseInt(
                 metadata.jsonld[0].offers[0].price as string,
               );

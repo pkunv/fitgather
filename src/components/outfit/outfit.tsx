@@ -37,8 +37,10 @@ export function Outfit({
           <DialogHeader>
             <Image
               src={expandImage as string}
-              width={540}
-              height={540}
+              width={1024}
+              height={1024}
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAARAAwDAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAACAEF/8QAJRAAAAUEAgICAwAAAAAAAAAAAQIDBAUGBwgRABITMQkhMmFi/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8A1c+8qr40PkO+om2Ffy1PRcLFMWzhJl4xIq5WKK5zj2KbRgIqmXYaHQcsDYw/uFPXTxtoas6kkDu5hwwO2kHCv5rOG6yiB1Df0bx9h/Y8gAd9bZVbcvK3IZUaXlRRgaUkJqPcmZqgm4Wbs2JUipGEvU4jpQAAoiOwHlDD+N9OXRxTgU5qMeR6wScqYiDtudFQEzPFDFHqcANod7AdffJQng9cCG98D//Z"
+              placeholder="blur"
               alt="Expanded image"
             />
           </DialogHeader>

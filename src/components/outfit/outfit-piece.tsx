@@ -39,7 +39,7 @@ export function OutfitPiece({
       onClick={onClickHandler}
       className={cn(
         buttonVariants({ variant: "ghost" }),
-        "relative m-auto flex h-32 w-3/4 items-center justify-center rounded-lg border-2 transition-all hover:cursor-pointer",
+        "relative m-auto flex h-36 w-full items-center justify-center rounded-lg border-4 transition-all hover:cursor-pointer sm:w-3/4",
         active ? "border-primary" : "border-gray-200",
         accessory && !item && !active && "opacity-50 hover:opacity-100",
       )}
@@ -68,11 +68,10 @@ export function OutfitPiece({
             (accessory ? " accessory" : "") +
             " image"
           }
-          className="z-0"
+          className="z-0 object-cover transition-all hover:brightness-90"
+          quality={50}
           fill={true}
-          style={{
-            objectFit: "contain",
-          }}
+          sizes="(max-width: 768px) 128px, 256px"
         />
       )}
       {!item && type === "head" && <Cat size={36} />}
