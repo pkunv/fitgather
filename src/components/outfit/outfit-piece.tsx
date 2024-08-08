@@ -39,7 +39,7 @@ export function OutfitPiece({
       onClick={onClickHandler}
       className={cn(
         buttonVariants({ variant: "ghost" }),
-        "relative flex h-28 w-3/4 items-center justify-center rounded-lg border-2 transition-all hover:cursor-pointer",
+        "relative m-auto flex h-32 w-3/4 items-center justify-center rounded-lg border-2 transition-all hover:cursor-pointer",
         active ? "border-primary" : "border-gray-200",
         accessory && !item && !active && "opacity-50 hover:opacity-100",
       )}
@@ -49,7 +49,7 @@ export function OutfitPiece({
         <Button
           variant={"outline"}
           size={"icon"}
-          className="absolute left-0 top-0 m-2 opacity-50 hover:opacity-100"
+          className="absolute left-0 top-0 z-10 m-2 opacity-50 hover:opacity-100"
           onClick={(e) => {
             e.stopPropagation();
             onExpandImage && onExpandImage(item.image);
@@ -68,9 +68,11 @@ export function OutfitPiece({
             (accessory ? " accessory" : "") +
             " image"
           }
-          width={64}
-          height={64}
-          objectFit="cover"
+          className="z-0"
+          fill={true}
+          style={{
+            objectFit: "contain",
+          }}
         />
       )}
       {!item && type === "head" && <Cat size={36} />}
