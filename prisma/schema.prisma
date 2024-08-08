@@ -54,7 +54,7 @@ model Item {
 model Outfit {
     id          Int      @id @default(autoincrement())
     name        String
-    slug        String   @unique
+    code        String   @unique
     description String?
     userId      String
     createdAt   DateTime @default(now())

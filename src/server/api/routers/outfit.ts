@@ -8,43 +8,39 @@ import { type itemSchema, outfitSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-function convertToSlug(id: number, content: string) {
-  return `${id}-${content
-    .toLowerCase()
-    .replace(/[^\w ]+/g, "")
-    .replace(/ +/g, "-")}`;
-}
+export const outfitInclude = {
+  user: true,
+  items: {
+    include: {
+      item: {
+        select: {
+          type: true,
+          accessory: true,
+          provider: true,
+          url: true,
+          title: true,
+          brand: true,
+          price: true,
+          currency: true,
+          image: true,
+        },
+      },
+    },
+  },
+};
 
 export const outfitRouter = createTRPCRouter({
   get: publicProcedure
-    .input(z.object({ id: z.number().optional(), slug: z.string().optional() }))
+    .input(z.object({ id: z.number().optional(), code: z.string().optional() }))
     .query(async ({ input, ctx }) => {
       const outfit = await ctx.db.outfit.findUnique({
-        where: { id: input.id, slug: input.slug },
-        include: {
-          user: true,
-          items: {
-            include: {
-              item: {
-                select: {
-                  type: true,
-                  accessory: true,
-                  provider: true,
-                  url: true,
-                  title: true,
-                  brand: true,
-                  price: true,
-                  currency: true,
-                  image: true,
-                },
-              },
-            },
-          },
-        },
+        where: { id: input.id, code: input.code?.toLocaleUpperCase() },
+        include: outfitInclude,
       });
       if (!outfit) return null;
 
       return {
+        id: outfit.id,
         name: outfit.name,
         user: outfit.user,
         createdAt: outfit.createdAt,
@@ -80,20 +76,97 @@ export const outfitRouter = createTRPCRouter({
         },
       })) ?? { id: 0 };
 
-      input.name = input.name ?? `Untitled outfit`;
-
       const nextId = previousOutfit.id + 1;
 
-      const slug = convertToSlug(
-        nextId,
-        input.name.split(" ").slice(0, 3).join(" "),
-      );
+      input.name = input.name ?? `Untitled outfit`;
+
+      // This code structure guarantees that the code will be unique
+      // and provides easily rememberable codes to share links.
+      const code =
+        nextId +
+        "O" +
+        (Math.random() + 1).toString(36).substring(9).toUpperCase();
 
       return await ctx.db.outfit.create({
         data: {
           name: input.name,
           userId: ctx.session.user.id,
-          slug,
+          code,
+          items: {
+            create: items.map((item) => ({
+              item: {
+                connectOrCreate: {
+                  where: {
+                    url: item.url,
+                  },
+                  create: {
+                    ...item,
+                    userId: ctx.session.user.id,
+                  },
+                },
+              },
+            })),
+          },
+        },
+        include: {
+          items: {
+            include: {
+              item: true,
+            },
+          },
+        },
+      });
+    }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().max(24).nullable(),
+        outfit: outfitSchema.create,
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const items = getOutfitItems(input.outfit);
+      if (items.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You need to add at least one item to your outfit.",
+        });
+      }
+      const outfit = await ctx.db.outfit.findUnique({
+        where: { id: input.id },
+        include: outfitInclude,
+      });
+
+      if (!outfit) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Outfit not found.",
+        });
+      }
+
+      if (outfit.userId !== ctx.session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to update this outfit.",
+        });
+      }
+
+      input.name = input.name ?? `Untitled outfit`;
+
+      await ctx.db.outfitItems.deleteMany({
+        where: {
+          outfitId: input.id,
+        },
+      });
+
+      return await ctx.db.outfit.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          userId: ctx.session.user.id,
           items: {
             create: items.map((item) => ({
               item: {

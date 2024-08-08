@@ -16,6 +16,7 @@ import { type KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
 import { type z } from "zod";
 
 const formSchema = outfitSchema.create;
@@ -72,12 +73,33 @@ export function OutfitForm({
     onSuccess: async (data) => {
       toast.success(`Your outfit has been created!`);
       localStorage.removeItem("outfit");
-      router.push(`/outfits/${data.slug}`);
+      router.push(`/outfits/${data.code}`);
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
+
+  const updateOutfit = api.outfit.update.useMutation({
+    onSuccess: async () => {
+      toast.success(`Your outfit has been updated!`);
+      router.refresh();
+      localStorage.removeItem("outfit");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const debouncedUpdateOutfit = useDebouncedCallback(() => {
+    action === "update" &&
+      data?.id &&
+      updateOutfit.mutate({
+        id: data?.id,
+        name: inputRef.current?.value ?? null,
+        outfit,
+      });
+  }, 1000);
 
   return (
     <>
@@ -98,23 +120,27 @@ export function OutfitForm({
                     : "create"
                 }
                 selectedPiece={selectedPiece}
-                onItemCreate={(data) => {
+                onItemCreate={(callbackData) => {
                   if (!selectedPiece) return;
-                  addItem({ setState: setOutfit, item: data });
+                  addItem({ setState: setOutfit, item: callbackData });
                   setSelectedPiece({
-                    type: data.type,
-                    accessory: data.accessory,
-                    url: data.url,
+                    type: callbackData.type,
+                    accessory: callbackData.accessory,
+                    url: callbackData.url,
                   });
+
+                  debouncedUpdateOutfit();
                 }}
-                onItemDelete={(data) => {
+                onItemDelete={(callbackData) => {
                   if (!selectedPiece) return;
                   const item = getOutfitItems(outfit).find(
-                    (item) => item.url === data?.url,
+                    (item) => item.url === callbackData?.url,
                   );
                   if (!item) return;
                   deleteItem({ setState: setOutfit, item });
                   setSelectedPiece(null);
+
+                  debouncedUpdateOutfit();
                 }}
               />
             </div>
@@ -141,13 +167,22 @@ export function OutfitForm({
                     className="w-full"
                     disabled={getOutfitItems(outfit).length === 0}
                     onClick={() => {
-                      createOutfit.mutate({
-                        name: inputRef.current?.value ?? null,
-                        outfit,
-                      });
+                      action === "update" &&
+                        data?.id &&
+                        updateOutfit.mutate({
+                          id: data?.id,
+                          name: inputRef.current?.value ?? null,
+                          outfit,
+                        });
+
+                      action === "create" &&
+                        createOutfit.mutate({
+                          name: inputRef.current?.value ?? null,
+                          outfit,
+                        });
                     }}
                   >
-                    {createOutfit.isPending ? (
+                    {createOutfit.isPending || updateOutfit.isPending ? (
                       <Spinner className="grayscale invert" />
                     ) : (
                       "Save outfit"

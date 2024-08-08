@@ -12,9 +12,9 @@ import { notFound } from "next/navigation";
 export default async function OutfitPage({
   params,
 }: {
-  params: { slug: string };
+  params: { code: string };
 }) {
-  const data = await api.outfit.get({ slug: params.slug });
+  const data = await api.outfit.get({ code: params.code });
   if (!data) notFound();
   const { getUser } = getKindeServerSession();
   const user = await getUser();
