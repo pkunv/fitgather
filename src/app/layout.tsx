@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
+import Footer from "@/components/footer/_footer";
 import { Header } from "@/components/header/_header";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -33,9 +34,10 @@ export default function RootLayout({
           <Toaster />
           <div className="max-w-screen flex min-h-screen flex-col">
             <Header />
-            <main className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-6 sm:px-0">
+            <main className="mx-auto flex min-h-[65svh] w-full max-w-6xl flex-col items-center justify-start gap-6 px-6 py-6 sm:px-0">
               {children}
             </main>
+            <Footer />
           </div>
         </TRPCReactProvider>
       </body>

@@ -20,8 +20,16 @@ export function OutfitCard({
       <Card className="w-full hover:bg-accent">
         <CardHeader>
           <CardTitle>{data.name}</CardTitle>
-          <CardDescription>
-            by Piotr • {data.createdAt.toLocaleDateString()}
+          <CardDescription className="flex gap-2">
+            by{" "}
+            <Image
+              width={23}
+              height={23}
+              className="rounded-full"
+              src={data.user.picture ?? "/user.svg"}
+              alt={data.user.fullname + " profile picture"}
+            />{" "}
+            {data.user.fullname} • {data.createdAt.toLocaleDateString()}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-row gap-2">
