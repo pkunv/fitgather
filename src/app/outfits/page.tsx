@@ -8,7 +8,7 @@ export default async function UserOutfitsPage() {
     <>
       <TypographyH1>My outfits</TypographyH1>
       <Suspense fallback={<Spinner />}>
-        <OutfitList />
+        <OutfitList type="user" />
       </Suspense>
     </>
   );

@@ -1,5 +1,6 @@
 import { Outfit } from "@/components/outfit/outfit";
 import { OutfitForm } from "@/components/outfit/outfit-form";
+import { OutfitSummary } from "@/components/outfit/outfit-summary";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
 import { TypographyH1, TypographyMuted } from "@/components/ui/typography";
 import { getOutfitItems } from "@/lib/item";
@@ -25,20 +26,7 @@ export default async function OutfitPage({
 
   return (
     <>
-      <TypographyH1>{data.name}</TypographyH1>
-      <div className="flex flex-row gap-2">
-        <TypographyMuted>by</TypographyMuted>
-        <Image
-          width={23}
-          height={23}
-          className="rounded-full"
-          src={data.user.picture ?? "/user.svg"}
-          alt={data.user.fullname + " profile picture"}
-        />{" "}
-        <TypographyMuted>{data.user.fullname}</TypographyMuted>
-        <TypographyMuted className="font-bold">•</TypographyMuted>
-        <TypographyMuted>{data.createdAt.toLocaleDateString()}</TypographyMuted>
-      </div>
+      <OutfitSummary data={data} />
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
         <Outfit outfit={data.outfit} />
         <div className="col-span-full flex flex-row gap-6 sm:col-span-2">

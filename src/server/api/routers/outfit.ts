@@ -30,29 +30,38 @@ export const outfitInclude = {
 };
 
 export const outfitRouter = createTRPCRouter({
-  getByUser: protectedProcedure.query(async ({ ctx }) => {
-    return (
-      await ctx.db.outfit.findMany({
-        where: {
-          userId: ctx.session.user.id,
-        },
-        include: outfitInclude,
-      })
-    ).map((outfit) => {
-      return {
-        id: outfit.id,
-        code: outfit.code,
-        name: outfit.name,
-        user: outfit.user,
-        createdAt: outfit.createdAt,
-        outfit: getOutfitFromItems(
-          outfit.items.map(
-            (item) => item.item as z.infer<typeof itemSchema.get>,
+  getMany: publicProcedure
+    .input(z.object({ type: z.enum(["user", "newest", "explore"]) }))
+    .query(async ({ input, ctx }) => {
+      return (
+        await ctx.db.outfit.findMany({
+          where: {
+            userId:
+              input.type === "user" && ctx.session?.user
+                ? ctx.session.user.id
+                : undefined,
+          },
+          include: outfitInclude,
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: input.type === "newest" ? 5 : undefined,
+        })
+      ).map((outfit) => {
+        return {
+          id: outfit.id,
+          code: outfit.code,
+          name: outfit.name,
+          user: outfit.user,
+          createdAt: outfit.createdAt,
+          outfit: getOutfitFromItems(
+            outfit.items.map(
+              (item) => item.item as z.infer<typeof itemSchema.get>,
+            ),
           ),
-        ),
-      };
-    });
-  }),
+        };
+      });
+    }),
   get: publicProcedure
     .input(z.object({ id: z.number().optional(), code: z.string().optional() }))
     .query(async ({ input, ctx }) => {

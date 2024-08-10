@@ -2,6 +2,7 @@
 
 import { ItemForm } from "@/components/item/item-form";
 import { Outfit } from "@/components/outfit/outfit";
+import { OutfitSummary } from "@/components/outfit/outfit-summary";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,6 +104,7 @@ export function OutfitForm({
 
   return (
     <>
+      {action === "update" && data && <OutfitSummary data={data} />}
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
         <Outfit
           outfit={outfit}
