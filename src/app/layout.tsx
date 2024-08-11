@@ -29,10 +29,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} antialiased`}>
-      <body>
+      <body className="overflow-y-scroll">
         <TRPCReactProvider>
           <Toaster />
-          <div className="max-w-screen flex min-h-screen flex-col">
+          <div className="flex min-h-screen w-screen max-w-full flex-col">
             <Header />
             <main className="mx-auto flex min-h-[65svh] w-full max-w-6xl flex-col items-center justify-start gap-6 px-6 py-6 sm:px-0">
               {children}
