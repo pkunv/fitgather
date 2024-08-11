@@ -8,7 +8,7 @@ import { Header } from "@/components/header/_header";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: {
     template: "%s / fitgather",
     default: "Home / fitgather",
@@ -16,10 +16,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  description: "Web app for creating best outfits.",
+  description:
+    "Web app for creating and sharing outfits using E-Commerce clothing websites.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   openGraph: {
+    type: "website",
+    title: "fitgather",
     siteName: "fitgather",
+    description:
+      "Web app for creating and sharing outfits using E-Commerce clothing websites.",
     url: new URL(`https://${process.env.VERCEL_URL}`),
   },
 } as Metadata;

@@ -2,13 +2,37 @@ import { Outfit } from "@/components/outfit/outfit";
 import { OutfitForm } from "@/components/outfit/outfit-form";
 import { OutfitSummary } from "@/components/outfit/outfit-summary";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
-import { TypographyH1, TypographyMuted } from "@/components/ui/typography";
 import { getOutfitItems } from "@/lib/item";
 import { api } from "@/trpc/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Separator } from "@radix-ui/react-separator";
-import Image from "next/image";
+import { type Metadata } from "next";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { code: string };
+}) {
+  const code = params.code;
+  const outfit = await api.outfit.get({ code });
+  if (!outfit) return null;
+
+  const title = outfit.name;
+  const description = `Outfit created by @${outfit.user.fullname} Join fitgather to create or share outfits using your favourite clothing shops.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: outfit.name,
+      description,
+      type: "article",
+      publishedTime: outfit.createdAt,
+      authors: [outfit.user.username],
+    },
+  } as Metadata;
+}
 
 export default async function OutfitPage({
   params,
