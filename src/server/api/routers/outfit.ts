@@ -31,8 +31,14 @@ export const outfitInclude = {
 
 export const outfitRouter = createTRPCRouter({
   getMany: publicProcedure
-    .input(z.object({ type: z.enum(["user", "newest", "explore"]) }))
+    .input(
+      z.object({
+        type: z.enum(["user", "newest", "explore"]).default("explore"),
+        searchQuery: z.string().optional(),
+      }),
+    )
     .query(async ({ input, ctx }) => {
+      console.log(input.searchQuery, "q");
       return (
         await ctx.db.outfit.findMany({
           where: {
@@ -40,6 +46,58 @@ export const outfitRouter = createTRPCRouter({
               input.type === "user" && ctx.session?.user
                 ? ctx.session.user.id
                 : undefined,
+            OR: [
+              {
+                items: {
+                  some: {
+                    item: {
+                      brand: {
+                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                      url: {
+                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                      title: {
+                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                items: {
+                  some: {
+                    item: {
+                      brand: {
+                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                      url: {
+                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                      title: {
+                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                name: {
+                  startsWith: input.searchQuery?.toLocaleLowerCase(),
+                  contains: input.searchQuery?.toLocaleLowerCase(),
+                },
+              },
+              {
+                user: {
+                  fullname: {
+                    contains: input.searchQuery?.toLocaleLowerCase(),
+                  },
+                  username: {
+                    contains: input.searchQuery?.toLocaleLowerCase(),
+                  },
+                },
+              },
+            ],
           },
           include: outfitInclude,
           orderBy: {

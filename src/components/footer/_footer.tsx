@@ -13,7 +13,7 @@ export default async function Footer() {
           <ul>
             <li>
               <Link
-                href="#"
+                href="/explore"
                 className={cn(buttonVariants({ variant: "link" }))}
               >
                 Explore
