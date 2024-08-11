@@ -28,6 +28,15 @@ const config = {
         protocol: "https",
         hostname: "images1.vinted.net",
       },
+      // H&M images
+      {
+        protocol: "https",
+        hostname: "lp2.hm.com",
+      },
+      {
+        protocol: "https",
+        hostname: "image.hm.com",
+      },
     ],
   },
 };
