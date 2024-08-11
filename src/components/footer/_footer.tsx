@@ -21,6 +21,14 @@ export default async function Footer() {
             </li>
             <li>
               <Link
+                href="/supported-shops"
+                className={cn(buttonVariants({ variant: "link" }))}
+              >
+                Supported shops
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="#"
                 className={cn(buttonVariants({ variant: "link" }))}
               >

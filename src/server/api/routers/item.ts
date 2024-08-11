@@ -14,6 +14,9 @@ export const itemRouter = createTRPCRouter({
         const metadata = await urlMetadata(input.url);
 
         const item = resolveItem(metadata);
+        if (!item) {
+          throw new Error("No clothing item found!");
+        }
 
         // as a security measure insert a record to db
         // to confirm later (while creating an outfit) that the item URL is valid

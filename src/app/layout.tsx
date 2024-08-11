@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import Footer from "@/components/footer/_footer";
 import { Header } from "@/components/header/_header";
+import ModalSlot from "@/components/ui/modal-slot";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -31,12 +32,14 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  modal,
+}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} antialiased`}>
       <body className="overflow-y-scroll">
         <TRPCReactProvider>
           <Toaster />
+          <ModalSlot>{modal}</ModalSlot>
           <div className="flex min-h-screen w-screen max-w-full flex-col">
             <Header />
             <main className="mx-auto flex min-h-[65svh] w-full max-w-6xl flex-col items-center justify-start gap-6 px-6 py-6 sm:px-0">

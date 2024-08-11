@@ -74,6 +74,7 @@ export function OutfitForm({
     onSuccess: async (data) => {
       toast.success(`Your outfit has been created!`);
       localStorage.removeItem("outfit");
+      router.refresh();
       router.push(`/outfits/${data.code}`);
     },
     onError: (error) => {

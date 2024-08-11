@@ -16,6 +16,7 @@ import { api, type RouterOutputs } from "@/trpc/react";
 import { itemSchema } from "@/trpc/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -83,8 +84,14 @@ export function ItemForm({
                 />
               </FormControl>
               <FormDescription>
-                We currently support clothing items from: Zalando and Vinted.
-                Other shops may still work though!
+                See our{" "}
+                <Link
+                  href="/supported-shops"
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  supported shops
+                </Link>{" "}
+                list to see if you can submit your item.
               </FormDescription>
               <FormMessage />
               <FormMessage>{form.formState.errors.type?.message}</FormMessage>
