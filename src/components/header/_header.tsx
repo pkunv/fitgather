@@ -19,20 +19,25 @@ export async function Header() {
   const isUserAuthenticated = await isAuthenticated();
 
   const headerLinks: HeaderLink[] = [
-    !isUserAuthenticated && {
-      title: "Sign in",
-      type: "signin",
-      button: { variant: "default" },
-    },
-    !isUserAuthenticated && {
-      title: "Sign up",
-      type: "signup",
-    },
     isUserAuthenticated && {
       title: "My outfits",
       button: { variant: "default" },
       type: "path",
-      path: "#",
+      path: "/outfits",
+    },
+    {
+      title: "Explore",
+      type: "path",
+      path: "/explore",
+    },
+    !isUserAuthenticated && {
+      title: "Sign in",
+      type: "signin",
+    },
+    !isUserAuthenticated && {
+      title: "Sign up",
+      type: "signup",
+      button: { variant: "default" },
     },
     isUserAuthenticated && {
       title: "Sign out",
@@ -41,6 +46,17 @@ export async function Header() {
   ].filter(Boolean) as HeaderLink[];
 
   const sheetLinks: HeaderLink[] = [
+    isUserAuthenticated && {
+      title: "My outfits",
+      button: { variant: "default" },
+      type: "path",
+      path: "/outfits",
+    },
+    {
+      title: "Explore",
+      type: "path",
+      path: "/explore",
+    },
     !isUserAuthenticated && {
       title: "Sign in",
       type: "signin",
@@ -48,11 +64,7 @@ export async function Header() {
     !isUserAuthenticated && {
       title: "Sign up",
       type: "signup",
-    },
-    isUserAuthenticated && {
-      title: "My outfits",
-      type: "path",
-      path: "#",
+      button: { variant: "default" },
     },
     isUserAuthenticated && {
       title: "Sign out",

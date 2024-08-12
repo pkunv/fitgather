@@ -2,12 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DATABASE_URL_NON_POOLING")
 }
 
 model User {
@@ -18,4 +20,58 @@ model User {
     picture    String?
     createdAt  DateTime  @default(now())
     lastSeenAt DateTime? @default(now())
+
+    createdItems Item[]
+    outfits      Outfit[]
+}
+
+model ResolvedItem {
+    url      String @unique
+    provider String
+
+    createdAt DateTime @default(now())
+}
+
+model Item {
+    id        String   @id @default(cuid())
+    // WARNING: This should be an enum but Prisma does not support enums for sqlite
+    // Item types that are supported: 'head', 'top', 'shoes', 'bottom'
+    type      String
+    accessory Boolean
+    provider  String
+    url       String   @unique
+    brand     String
+    title     String
+    image     String
+    price     Int
+    currency  String
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user    User          @relation(fields: [userId], references: [id])
+    outfits OutfitItems[]
+}
+
+model Outfit {
+    id          Int      @id @default(autoincrement())
+    name        String
+    code        String   @unique
+    description String?
+    userId      String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    user  User          @relation(fields: [userId], references: [id])
+    items OutfitItems[]
+}
+
+model OutfitItems {
+    id        Int      @id @default(autoincrement())
+    outfitId  Int
+    itemId    String
+    createdAt DateTime @default(now())
+
+    outfit Outfit @relation(fields: [outfitId], references: [id])
+    item   Item   @relation(fields: [itemId], references: [id])
 }

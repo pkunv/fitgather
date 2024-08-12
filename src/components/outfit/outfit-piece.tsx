@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type itemSchema, type itemTypeSchema } from "@/trpc/schemas";
 import { trousers } from "@lucide/lab";
@@ -10,6 +10,7 @@ import { type z } from "zod";
 
 export function OutfitPiece({
   accessory,
+  accessoryIndex,
   type,
   item,
   active,
@@ -17,6 +18,7 @@ export function OutfitPiece({
   onExpandImage,
 }: {
   accessory: boolean;
+  accessoryIndex?: number;
   type: z.infer<typeof itemTypeSchema>;
   item: z.infer<typeof itemSchema.get> | null;
   active?: boolean;
@@ -28,24 +30,26 @@ export function OutfitPiece({
       type: item?.type ?? type,
       accessory: accessory,
       url: item?.url ?? null,
+      accessoryIndex: accessoryIndex ?? undefined,
     };
     onClick && onClick(data);
   };
   return (
-    <Button
+    <div
       onClick={onClickHandler}
       className={cn(
-        "relative flex h-28 w-full items-center justify-center rounded-lg border-2 transition-all",
+        buttonVariants({ variant: "ghost" }),
+        "relative m-auto flex h-36 w-full items-center justify-center rounded-lg border-4 transition-all hover:cursor-pointer sm:w-3/4",
         active ? "border-primary" : "border-gray-200",
+        accessory && !item && !active && "opacity-50 hover:opacity-100",
       )}
-      variant={"ghost"}
       aria-label={`${type} clothing item${accessory ? " accessory" : ""} button`}
     >
       {item && (
         <Button
           variant={"outline"}
           size={"icon"}
-          className="absolute left-0 top-0 m-2 opacity-50 hover:opacity-100"
+          className="absolute left-0 top-0 z-10 m-2 opacity-50 hover:opacity-100"
           onClick={(e) => {
             e.stopPropagation();
             onExpandImage && onExpandImage(item.image);
@@ -64,9 +68,10 @@ export function OutfitPiece({
             (accessory ? " accessory" : "") +
             " image"
           }
-          width={64}
-          height={64}
-          objectFit="cover"
+          className="z-0 object-cover transition-all hover:brightness-90"
+          quality={50}
+          fill={true}
+          sizes="(max-width: 768px) 128px, 256px"
         />
       )}
       {!item && type === "head" && <Cat size={36} />}
@@ -75,6 +80,6 @@ export function OutfitPiece({
       {!item && type === "bottom" && <Icon iconNode={trousers} size={36} />}
       {!item && type === "shoes" && <Footprints size={36} />}
       {!item && accessory && <Plus size={12} />}
-    </Button>
+    </div>
   );
 }

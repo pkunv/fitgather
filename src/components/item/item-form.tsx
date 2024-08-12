@@ -16,6 +16,7 @@ import { api, type RouterOutputs } from "@/trpc/react";
 import { itemSchema } from "@/trpc/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,11 +29,13 @@ export function ItemForm({
   selectedPiece,
   onItemCreate,
   onItemDelete,
+  demo,
 }: {
   action: "create" | "update";
   selectedPiece: z.infer<typeof itemSchema.select>;
   onItemCreate: (data: RouterOutputs["item"]["create"]) => void;
   onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
+  demo?: boolean;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,12 +58,15 @@ export function ItemForm({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (demo) {
+      toast.info("That's a demo though!");
+      return;
+    }
     createItem.mutate(values);
   }
 
   useEffect(() => {
     if (!selectedPiece) return;
-    console.log(selectedPiece);
     form.setValue("type", selectedPiece.type);
     form.setValue("accessory", selectedPiece.accessory);
     if (selectedPiece.url) form.setValue("url", selectedPiece.url);
@@ -79,12 +85,19 @@ export function ItemForm({
               <FormControl>
                 <Input
                   placeholder="https://www.zalando.pl/polo-ralph-lauren-short-sleeve-koszulka-polo-athletic-green-multi-po222p0pi-m11.html"
+                  readOnly={demo}
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                We currently support clothing items from: Zalando and Vinted.
-                Other shops may still work though!
+                See our{" "}
+                <Link
+                  href="/supported-shops"
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  supported shops
+                </Link>{" "}
+                list to see if you can submit your item.
               </FormDescription>
               <FormMessage />
               <FormMessage>{form.formState.errors.type?.message}</FormMessage>

@@ -31,7 +31,7 @@ export function MenuItem({ item }: { item: HeaderLink }) {
           className={cn(
             buttonVariants(item.button ?? { variant: "ghost" }),
             "ml-4 w-fit items-center justify-stretch gap-4",
-            active ? "bg-accent text-accent-foreground" : "",
+            active ? "underline" : "",
           )}
         >
           {item.icon && (
