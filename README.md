@@ -21,6 +21,7 @@ This is the fastest way to build type-safe web app using NEXT.js.
 | Auth              | Kinde Auth   |
 | API Library       | tRPC         |
 | Database ORM      | Prisma       |
+| Database          | Postgres     |
 | CSS Framework     | Tailwind CSS |
 | Component library | shadcn/ui    |
 | E2E Tests         | Playwright   |
