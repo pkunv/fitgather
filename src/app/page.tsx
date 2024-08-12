@@ -1,3 +1,4 @@
+import { HowItWorks } from "@/app/about/how-it-works";
 import { OutfitForm } from "@/components/outfit/outfit-form";
 import { OutfitList } from "@/components/outfit/outfit-list";
 import { Spinner } from "@/components/ui/spinner";
@@ -13,6 +14,7 @@ export default async function Home() {
     <>
       <TypographyH1>Let&apos;s make an outfit!</TypographyH1>
       <OutfitForm user={user} action="create" />
+      <HowItWorks />
       <TypographyH2>Newest outfits</TypographyH2>
       <Suspense fallback={<Spinner />}>
         <OutfitList type="newest" />
