@@ -29,7 +29,7 @@ export default async function Footer() {
             </li>
             <li>
               <Link
-                href="#"
+                href="/about"
                 className={cn(buttonVariants({ variant: "link" }))}
               >
                 About
@@ -37,7 +37,7 @@ export default async function Footer() {
             </li>
             <li>
               <Link
-                href="#"
+                href="/contact"
                 className={cn(buttonVariants({ variant: "link" }))}
               >
                 Contact

@@ -29,11 +29,13 @@ export function ItemForm({
   selectedPiece,
   onItemCreate,
   onItemDelete,
+  demo,
 }: {
   action: "create" | "update";
   selectedPiece: z.infer<typeof itemSchema.select>;
   onItemCreate: (data: RouterOutputs["item"]["create"]) => void;
   onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
+  demo?: boolean;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +58,10 @@ export function ItemForm({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (demo) {
+      toast.info("That's a demo though!");
+      return;
+    }
     createItem.mutate(values);
   }
 
@@ -80,6 +86,7 @@ export function ItemForm({
               <FormControl>
                 <Input
                   placeholder="https://www.zalando.pl/polo-ralph-lauren-short-sleeve-koszulka-polo-athletic-green-multi-po222p0pi-m11.html"
+                  readOnly={demo}
                   {...field}
                 />
               </FormControl>
