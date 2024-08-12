@@ -11,7 +11,12 @@ import { TypographyH2, TypographyMuted } from "@/components/ui/typography";
 import { providers } from "@/lib/provider";
 import { cn } from "@/lib/utils";
 import { Check, X } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Supported shops",
+};
 
 export default function SupportedShopsPage() {
   return (

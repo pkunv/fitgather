@@ -1,5 +1,10 @@
 import { TypographyH1, TypographyLead } from "@/components/ui/typography";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Contact",
+};
 
 export default async function ContactPage() {
   return (
@@ -22,6 +27,16 @@ export default async function ContactPage() {
           className="scroll-m-20 text-xl font-semibold tracking-tight hover:underline"
         >
           pkunv
+        </Link>
+      </div>
+      <div className="flex flex-row gap-2">
+        <TypographyLead>Github repo:</TypographyLead>
+        <Link
+          href="https://github.com/pkunv/fitgather"
+          target="_blank"
+          className="scroll-m-20 text-xl font-semibold tracking-tight hover:underline"
+        >
+          fitgather
         </Link>
       </div>
     </>

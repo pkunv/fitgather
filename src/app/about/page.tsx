@@ -4,6 +4,11 @@ import {
   TypographyH2,
   TypographyP,
 } from "@/components/ui/typography";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
+};
 
 export default function About() {
   return (
@@ -25,6 +30,10 @@ export default function About() {
         I will try to make it work with as many as possible. At some point I
         want to integrate AI to find this metadata automatically if given shop
         is not officially supported.
+      </TypographyP>
+      <TypographyP>
+        Feel free to contribute to add more shop resolvers or improve this app!
+        Check Github repo link at Contact page.
       </TypographyP>
       <HowItWorks />
     </>

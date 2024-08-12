@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata = {
+  metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
     template: "%s / fitgather",
     default: "Home / fitgather",
