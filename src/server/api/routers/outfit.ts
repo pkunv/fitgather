@@ -149,11 +149,36 @@ export const outfitRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      if (
+        (input.outfit.head?.accessories?.length ?? 0) > 2 ||
+        (input.outfit.top?.accessories?.length ?? 0) > 2 ||
+        (input.outfit.bottom?.accessories?.length ?? 0) > 2 ||
+        (input.outfit.shoes?.accessories?.length ?? 0) > 2
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You can't add more than 2 accessories to a type.",
+        });
+      }
+
       const items = getOutfitItems(input.outfit);
+
       if (items.length === 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "You need to add at least one item to your outfit.",
+        });
+      }
+      // find duplicate items by the same url property
+      const duplicateItems = items.filter(
+        (item, index, self) =>
+          index !== self.findIndex((t) => t.url === item.url),
+      );
+
+      if (duplicateItems.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You can't add the same item more than once.",
         });
       }
 
