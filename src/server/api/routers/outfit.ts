@@ -282,4 +282,33 @@ export const outfitRouter = createTRPCRouter({
         },
       });
     }),
+  delete: protectedProcedure
+    .input(z.object({ code: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const outfit = await ctx.db.outfit.findFirst({
+        where: {
+          code: input.code,
+          userId: ctx.session.user.id,
+        },
+      });
+
+      if (!outfit) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Outfit not found.",
+        });
+      }
+
+      await ctx.db.outfitItems.deleteMany({
+        where: {
+          outfitId: outfit.id,
+        },
+      });
+
+      return await ctx.db.outfit.delete({
+        where: {
+          id: outfit.id,
+        },
+      });
+    }),
 });
