@@ -8,6 +8,7 @@ import { Header } from "@/components/header/_header";
 import ModalSlot from "@/components/ui/modal-slot";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable} antialiased`}>
       <body className="overflow-y-scroll">
         <TRPCReactProvider>
+          <SpeedInsights />
           <Toaster />
           <ModalSlot>{modal}</ModalSlot>
           <div className="flex min-h-screen w-screen max-w-full flex-col">
