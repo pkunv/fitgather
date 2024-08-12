@@ -4,8 +4,20 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { itemSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
 import urlMetadata from "url-metadata";
+import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
+  getMany: publicProcedure
+    .input(z.object({ title: z.string().optional() }))
+    .query(async ({ input, ctx }) => {
+      return await ctx.db.item.findMany({
+        where: {
+          title: {
+            contains: input.title,
+          },
+        },
+      });
+    }),
   create: publicProcedure
     .input(itemSchema.create)
     .mutation(async ({ ctx, input }) => {
