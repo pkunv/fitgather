@@ -67,7 +67,6 @@ export function ItemForm({
 
   useEffect(() => {
     if (!selectedPiece) return;
-    console.log(selectedPiece);
     form.setValue("type", selectedPiece.type);
     form.setValue("accessory", selectedPiece.accessory);
     if (selectedPiece.url) form.setValue("url", selectedPiece.url);

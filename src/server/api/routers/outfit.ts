@@ -38,7 +38,6 @@ export const outfitRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      console.log(input.searchQuery, "q");
       return (
         await ctx.db.outfit.findMany({
           where: {

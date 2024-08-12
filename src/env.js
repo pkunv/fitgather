@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
+    DATABASE_URL_NON_POOLING: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -34,6 +35,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL_NON_POOLING: process.env.DATABASE_URL_NON_POOLING,
     NODE_ENV: process.env.NODE_ENV,
     KINDE_CLIENT_ID: process.env.KINDE_CLIENT_ID,
     KINDE_CLIENT_SECRET: process.env.KINDE_CLIENT_SECRET,
