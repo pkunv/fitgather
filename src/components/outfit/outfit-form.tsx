@@ -45,27 +45,28 @@ export function OutfitForm({
   user: KindeUser | null;
 }) {
   const router = useRouter();
+
+  const emptyOutfit = {
+    head: {
+      main: null,
+      accessories: null,
+    },
+    top: {
+      main: null,
+      accessories: null,
+    },
+    bottom: {
+      main: null,
+      accessories: null,
+    },
+    shoes: {
+      main: null,
+      accessories: null,
+    },
+  };
+  const [resetOutfitOpen, setResetOutfitOpen] = useState(false);
   const [outfit, setOutfit] = useState<z.infer<typeof formSchema>>(
-    data
-      ? data.outfit
-      : {
-          head: {
-            main: null,
-            accessories: null,
-          },
-          top: {
-            main: null,
-            accessories: null,
-          },
-          bottom: {
-            main: null,
-            accessories: null,
-          },
-          shoes: {
-            main: null,
-            accessories: null,
-          },
-        },
+    data ? data.outfit : emptyOutfit,
   );
   const [selectedPiece, setSelectedPiece] =
     useState<z.infer<typeof itemSchema.select>>(null);
@@ -189,6 +190,40 @@ export function OutfitForm({
                     />
                   </div>
                   <div className="flex flex-row gap-2">
+                    <AlertDialog
+                      open={resetOutfitOpen}
+                      onOpenChange={setResetOutfitOpen}
+                    >
+                      <AlertDialogTrigger
+                        className={cn(buttonVariants({ variant: "secondary" }))}
+                      >
+                        Reset
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will reset your
+                            outfit.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              setOutfit(emptyOutfit);
+                              setSelectedPiece(null);
+                              localStorage.removeItem("outfit");
+                              setResetOutfitOpen(false);
+                            }}
+                          >
+                            Reset
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     {action === "update" && data && (
                       <AlertDialog>
                         <AlertDialogTrigger
