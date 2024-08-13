@@ -52,13 +52,27 @@ export function OutfitSummaryTable({
       </TableBody>
       {items.length > 0 && (
         <TableFooter>
-          <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="text-right">
-              {items.reduce((acc, val) => val.price + acc, 0)}{" "}
-              {items.find((item) => item)?.currency}
-            </TableCell>
-          </TableRow>
+          {[...new Set(items.map((item) => item.currency))].length > 1 ? (
+            [...new Set(items.map((item) => item.currency))].map((currency) => (
+              <TableRow key={currency}>
+                <TableCell colSpan={2}>Total ({currency})</TableCell>
+                <TableCell className="text-right">
+                  {items
+                    .filter((item) => item.currency === currency)
+                    .reduce((acc, val) => val.price + acc, 0)}{" "}
+                  {currency}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={2}>Total</TableCell>
+              <TableCell className="text-right">
+                {items.reduce((acc, val) => val.price + acc, 0)}{" "}
+                {items.find((item) => item)?.currency}
+              </TableCell>
+            </TableRow>
+          )}
         </TableFooter>
       )}
     </Table>

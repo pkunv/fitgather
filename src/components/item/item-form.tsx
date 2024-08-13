@@ -1,5 +1,6 @@
 "use client";
 
+import { ItemSelect } from "@/components/item/item-select";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -89,6 +90,7 @@ export function ItemForm({
                   {...field}
                 />
               </FormControl>
+
               <FormDescription>
                 See our{" "}
                 <Link
@@ -104,6 +106,16 @@ export function ItemForm({
             </FormItem>
           )}
         />
+
+        <ItemSelect
+          onSelect={(item) => {
+            onItemCreate({
+              ...item,
+              type: item.type as "head" | "top" | "bottom" | "shoes",
+            });
+            form.setValue("url", item.url);
+          }}
+        />
         <div className="flex w-full justify-end gap-2">
           {action === "update" && (
             <Button
@@ -117,6 +129,7 @@ export function ItemForm({
               <Trash2 />
             </Button>
           )}
+
           <Button type="submit">
             {createItem.isPending ? (
               <Spinner className="grayscale invert" />

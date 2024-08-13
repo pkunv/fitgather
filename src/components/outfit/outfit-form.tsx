@@ -4,16 +4,29 @@ import { ItemForm } from "@/components/item/item-form";
 import { Outfit } from "@/components/outfit/outfit";
 import { OutfitSummary } from "@/components/outfit/outfit-summary";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { TypographyMuted } from "@/components/ui/typography";
 import { addItem, deleteItem, getOutfitItems } from "@/lib/item";
+import { cn } from "@/lib/utils";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
 import { type KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -32,27 +45,28 @@ export function OutfitForm({
   user: KindeUser | null;
 }) {
   const router = useRouter();
+
+  const emptyOutfit = {
+    head: {
+      main: null,
+      accessories: null,
+    },
+    top: {
+      main: null,
+      accessories: null,
+    },
+    bottom: {
+      main: null,
+      accessories: null,
+    },
+    shoes: {
+      main: null,
+      accessories: null,
+    },
+  };
+  const [resetOutfitOpen, setResetOutfitOpen] = useState(false);
   const [outfit, setOutfit] = useState<z.infer<typeof formSchema>>(
-    data
-      ? data.outfit
-      : {
-          head: {
-            main: null,
-            accessories: null,
-          },
-          top: {
-            main: null,
-            accessories: null,
-          },
-          bottom: {
-            main: null,
-            accessories: null,
-          },
-          shoes: {
-            main: null,
-            accessories: null,
-          },
-        },
+    data ? data.outfit : emptyOutfit,
   );
   const [selectedPiece, setSelectedPiece] =
     useState<z.infer<typeof itemSchema.select>>(null);
@@ -87,6 +101,16 @@ export function OutfitForm({
       toast.success(`Your outfit has been updated!`);
       router.refresh();
       localStorage.removeItem("outfit");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteOutfit = api.outfit.delete.useMutation({
+    onSuccess: async () => {
+      toast.success(`Your outfit has been deleted!`);
+      router.push("/");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -165,32 +189,104 @@ export function OutfitForm({
                       defaultValue={data?.name ? data.name : undefined}
                     />
                   </div>
-
-                  <Button
-                    className="w-full"
-                    disabled={getOutfitItems(outfit).length === 0}
-                    onClick={() => {
-                      action === "update" &&
-                        data?.id &&
-                        updateOutfit.mutate({
-                          id: data?.id,
-                          name: inputRef.current?.value ?? null,
-                          outfit,
-                        });
-
-                      action === "create" &&
-                        createOutfit.mutate({
-                          name: inputRef.current?.value ?? null,
-                          outfit,
-                        });
-                    }}
-                  >
-                    {createOutfit.isPending || updateOutfit.isPending ? (
-                      <Spinner className="grayscale invert" />
-                    ) : (
-                      "Save outfit"
+                  <div className="flex flex-row gap-2">
+                    <AlertDialog
+                      open={resetOutfitOpen}
+                      onOpenChange={setResetOutfitOpen}
+                    >
+                      <AlertDialogTrigger
+                        className={cn(buttonVariants({ variant: "secondary" }))}
+                      >
+                        Reset
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will reset your
+                            outfit.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              setOutfit(emptyOutfit);
+                              setSelectedPiece(null);
+                              localStorage.removeItem("outfit");
+                              setResetOutfitOpen(false);
+                            }}
+                          >
+                            Reset
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    {action === "update" && data && (
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          className={cn(
+                            buttonVariants({ variant: "secondary" }),
+                          )}
+                        >
+                          <Trash2 />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your outfit.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                deleteOutfit.mutate({ code: data.code });
+                              }}
+                            >
+                              {deleteOutfit.isPending ? (
+                                <Spinner className="grayscale invert" />
+                              ) : (
+                                "Delete"
+                              )}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
-                  </Button>
+
+                    <Button
+                      className="w-full"
+                      disabled={getOutfitItems(outfit).length === 0}
+                      onClick={() => {
+                        action === "update" &&
+                          data?.id &&
+                          updateOutfit.mutate({
+                            id: data?.id,
+                            name: inputRef.current?.value ?? null,
+                            outfit,
+                          });
+
+                        action === "create" &&
+                          createOutfit.mutate({
+                            name: inputRef.current?.value ?? null,
+                            outfit,
+                          });
+                      }}
+                    >
+                      {createOutfit.isPending || updateOutfit.isPending ? (
+                        <Spinner className="grayscale invert" />
+                      ) : (
+                        "Save outfit"
+                      )}
+                    </Button>
+                  </div>
                 </>
               )}
             </div>

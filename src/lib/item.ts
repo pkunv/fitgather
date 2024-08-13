@@ -28,9 +28,11 @@ export function getOutfitFromItems(items: z.infer<typeof itemSchema.get>[]) {
 
   items.forEach((item) => {
     if (item.accessory) {
-      outfit[item.type].accessories = outfit.head.accessories
-        ? [...(outfit.head.accessories as []), item]
-        : [item];
+      outfit[item.type].accessories =
+        outfit[item.type].accessories !== null
+          ? [...(outfit[item.type].accessories as []), item]
+          : [item];
+      return;
     }
     outfit[item.type].main = item;
   });
@@ -46,17 +48,9 @@ export function addItem({
 }) {
   if (!item) return;
   setState((prev) => {
-    const newState = {
-      ...prev,
-      [item.type]: item.accessory
-        ? {
-            main: prev[item.type].main,
-            accessories: prev[item.type].accessories
-              ? [...(prev[item.type].accessories as []), item]
-              : [item],
-          }
-        : { accessories: prev[item.type].accessories, main: item },
-    };
+    const items = getOutfitItems(prev);
+    items.push(item);
+    const newState = getOutfitFromItems(items);
     window.localStorage.setItem("outfit", JSON.stringify(newState));
     return newState;
   });
@@ -71,19 +65,10 @@ export function deleteItem({
 }) {
   if (!item) return;
   setState((prev) => {
-    const newState = {
-      ...prev,
-      [item.type]: item.accessory
-        ? {
-            main: prev[item.type].main,
-            accessories: prev[item.type].accessories
-              ? (prev[item.type].accessories as [] | null)?.filter(
-                  (acc) => acc !== item,
-                )
-              : null,
-          }
-        : { accessories: prev[item.type].accessories, main: null },
-    };
+    const items = getOutfitItems(prev);
+    const newState = getOutfitFromItems(
+      items.filter((i) => i.url !== item.url),
+    );
     window.localStorage.setItem("outfit", JSON.stringify(newState));
     return newState;
   });

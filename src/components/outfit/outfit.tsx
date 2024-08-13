@@ -103,7 +103,7 @@ export function Outfit({
             active={
               selectedPiece?.accessory &&
               selectedPiece?.type === "head" &&
-              selectedPiece.accessoryIndex === 1
+              selectedPiece.accessoryIndex === 0
             }
             item={
               outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
