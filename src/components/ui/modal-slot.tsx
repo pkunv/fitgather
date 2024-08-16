@@ -50,7 +50,12 @@ export default function ModalSlot({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={cn("min-h-80 items-center", className ?? "")}>
+        <DialogContent
+          className={cn(
+            "max-h-screen min-h-80 items-center overflow-y-scroll lg:max-w-screen-md",
+            className ?? "",
+          )}
+        >
           <DialogHeader>
             <DialogTitle className="hidden">{dialogTitle}</DialogTitle>
           </DialogHeader>
