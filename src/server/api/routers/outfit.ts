@@ -10,6 +10,7 @@ import { z } from "zod";
 
 export const outfitInclude = {
   user: true,
+  likes: true,
   items: {
     include: {
       item: {
@@ -111,6 +112,7 @@ export const outfitRouter = createTRPCRouter({
           name: outfit.name,
           user: outfit.user,
           createdAt: outfit.createdAt,
+          likes: outfit.likes,
           outfit: getOutfitFromItems(
             outfit.items.map(
               (item) => item.item as z.infer<typeof itemSchema.get>,
@@ -134,6 +136,7 @@ export const outfitRouter = createTRPCRouter({
         name: outfit.name,
         user: outfit.user,
         createdAt: outfit.createdAt,
+        likes: outfit.likes,
         outfit: getOutfitFromItems(
           outfit.items.map(
             (item) => item.item as z.infer<typeof itemSchema.get>,
@@ -333,6 +336,49 @@ export const outfitRouter = createTRPCRouter({
       return await ctx.db.outfit.delete({
         where: {
           id: outfit.id,
+        },
+      });
+    }),
+  toggleLike: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const outfit = await ctx.db.outfit.findUnique({
+        where: { id: input.id },
+        include: {
+          likes: true,
+        },
+      });
+
+      if (!outfit) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Outfit not found.",
+        });
+      }
+
+      const like = outfit.likes.find(
+        (like) => like.userId === ctx.session.user.id,
+      );
+
+      if (like) {
+        await ctx.db.outfitLikes.delete({
+          where: {
+            id: like.id,
+          },
+        });
+      } else {
+        await ctx.db.outfitLikes.create({
+          data: {
+            userId: ctx.session.user.id,
+            outfitId: outfit.id,
+          },
+        });
+      }
+
+      return await ctx.db.outfit.findUnique({
+        where: { id: input.id },
+        include: {
+          likes: true,
         },
       });
     }),

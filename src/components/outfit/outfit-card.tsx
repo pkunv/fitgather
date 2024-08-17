@@ -31,6 +31,7 @@ export function OutfitCard({
               alt={data.user.fullname + " profile picture"}
             />{" "}
             {data.user.fullname} • {data.createdAt.toLocaleDateString()}
+            {data.likes.length > 0 && ` • ${data.likes.length} likes`}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-row gap-2">

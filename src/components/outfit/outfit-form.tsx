@@ -129,7 +129,7 @@ export function OutfitForm({
 
   return (
     <>
-      {action === "update" && data && <OutfitSummary data={data} />}
+      {action === "update" && data && <OutfitSummary data={data} user={user} />}
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
         <Outfit
           outfit={outfit}

@@ -23,6 +23,7 @@ model User {
 
     createdItems Item[]
     outfits      Outfit[]
+    likes        OutfitLikes[]
 }
 
 model ResolvedItem {
@@ -64,6 +65,7 @@ model Outfit {
 
     user  User          @relation(fields: [userId], references: [id])
     items OutfitItems[]
+    likes OutfitLikes[]
 }
 
 model OutfitItems {
@@ -74,4 +76,14 @@ model OutfitItems {
 
     outfit Outfit @relation(fields: [outfitId], references: [id])
     item   Item   @relation(fields: [itemId], references: [id])
+}
+
+model OutfitLikes {
+    id        Int      @id @default(autoincrement())
+    outfitId  Int
+    userId    String
+    createdAt DateTime @default(now())
+
+    outfit Outfit @relation(fields: [outfitId], references: [id])
+    user   User   @relation(fields: [userId], references: [id])
 }

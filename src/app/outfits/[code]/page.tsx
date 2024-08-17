@@ -50,7 +50,7 @@ export default async function OutfitPage({
 
   return (
     <>
-      <OutfitSummary data={data} />
+      <OutfitSummary data={data} user={user} />
       <div className="grid grid-cols-5 grid-rows-1 gap-4">
         <Outfit outfit={data.outfit} />
         <div className="col-span-full flex flex-row gap-6 sm:col-span-2">
