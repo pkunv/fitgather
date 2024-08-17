@@ -12,6 +12,7 @@ export type Provider = {
   resolve: (
     metadata: urlMetadata.Result,
   ) => z.infer<typeof itemSchema.get> | null;
+  useUnoptimizedImage?: boolean;
 };
 
 export const providers = [
@@ -114,8 +115,31 @@ export const providers = [
     name: "gucci",
     fullname: "Gucci",
     url: "https://www.gucci.com",
-    regions: null,
-    resolve: null,
+    regions: ["All"],
+    resolve: function (metadata: urlMetadata.Result) {
+      const product = (metadata.jsonld as []).find(
+        (entry) => entry["@type"] === "Product",
+      )! as Product;
+      const title = product.name?.toString();
+      const image = metadata.jsonld[0].image[0] as string; // product.image[0] as string;
+      const offer = (product.offers as []).find(
+        (entry) => entry["@type"] === "Offer",
+      )! as Offer;
+      const price = parseInt(offer.price as string);
+      const currency = (offer.priceCurrency as string)
+        .toString()
+        .toLocaleLowerCase();
+
+      return {
+        provider: this.name,
+        brand: this.fullname,
+        title,
+        image,
+        price,
+        currency,
+      };
+    },
+    useUnoptimizedImage: true,
   },
   {
     name: "prada",
@@ -145,4 +169,32 @@ export const providers = [
     regions: null,
     resolve: null,
   },
+  {
+    name: "vitkac",
+    fullname: "Vitkac",
+    url: "https://vitkac.com",
+    regions: ["EU"],
+    resolve: function (metadata: urlMetadata.Result) {
+      const title = metadata["og:title"] as string;
+      const image = (metadata["og:image"] as string).split(",")[0];
+      const price = 0;
+      const currency = "?";
+
+      return {
+        provider: this.name,
+        brand: this.fullname,
+        title,
+        image,
+        price,
+        currency,
+      };
+    },
+  },
 ] as Provider[];
+
+export function isUnoptimizedImage(imageUrl: string): boolean {
+  return providers.some(
+    (provider) =>
+      provider.useUnoptimizedImage && imageUrl.includes(provider.name),
+  );
+}

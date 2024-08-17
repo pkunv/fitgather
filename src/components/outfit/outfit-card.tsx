@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getOutfitItems } from "@/lib/item";
+import { isUnoptimizedImage } from "@/lib/provider";
 import { type RouterOutputs } from "@/trpc/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,6 +31,7 @@ export function OutfitCard({
               alt={data.user.fullname + " profile picture"}
             />{" "}
             {data.user.fullname} • {data.createdAt.toLocaleDateString()}
+            {data.likes.length > 0 && ` • ${data.likes.length} likes`}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-row gap-2">
@@ -40,6 +42,7 @@ export function OutfitCard({
               alt={item.title}
               width={54}
               height={54}
+              unoptimized={isUnoptimizedImage(item.image)}
             />
           ))}
         </CardContent>

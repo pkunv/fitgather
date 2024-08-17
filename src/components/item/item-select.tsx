@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { isUnoptimizedImage } from "@/lib/provider";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
@@ -58,6 +59,7 @@ export function ItemSelect({
                   src={item.image}
                   width={23}
                   height={23}
+                  unoptimized={isUnoptimizedImage(item.image)}
                 />
                 {item.price} {item.currency}
               </div>{" "}
