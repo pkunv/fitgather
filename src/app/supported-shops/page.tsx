@@ -36,25 +36,35 @@ export default function SupportedShopsPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {providers.map((provider) => {
-            return (
-              <TableRow key={provider.name}>
-                <TableCell>
-                  <Link
-                    href={provider.url}
-                    target="_blank"
-                    className={cn(buttonVariants({ variant: "link" }))}
-                  >
-                    {provider.fullname}
-                  </Link>{" "}
-                </TableCell>
-                <TableCell>{provider.regions?.join(", ")}</TableCell>
-                <TableCell>
-                  {provider.resolve !== null ? <Check /> : <X />}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {providers
+            .sort((a, b) => {
+              if (a.resolve === null && b.resolve !== null) {
+                return 1;
+              }
+              if (a.resolve !== null && b.resolve === null) {
+                return -1;
+              }
+              return 0;
+            })
+            .map((provider) => {
+              return (
+                <TableRow key={provider.name}>
+                  <TableCell>
+                    <Link
+                      href={provider.url}
+                      target="_blank"
+                      className={cn(buttonVariants({ variant: "link" }))}
+                    >
+                      {provider.fullname}
+                    </Link>{" "}
+                  </TableCell>
+                  <TableCell>{provider.regions?.join(", ")}</TableCell>
+                  <TableCell>
+                    {provider.resolve !== null ? <Check /> : <X />}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </>

@@ -169,6 +169,27 @@ export const providers = [
     regions: null,
     resolve: null,
   },
+  {
+    name: "vitkac",
+    fullname: "Vitkac",
+    url: "https://vitkac.com",
+    regions: ["EU"],
+    resolve: function (metadata: urlMetadata.Result) {
+      const title = metadata["og:title"] as string;
+      const image = (metadata["og:image"] as string).split(",")[0];
+      const price = 0;
+      const currency = "?";
+
+      return {
+        provider: this.name,
+        brand: this.fullname,
+        title,
+        image,
+        price,
+        currency,
+      };
+    },
+  },
 ] as Provider[];
 
 export function isUnoptimizedImage(imageUrl: string): boolean {
