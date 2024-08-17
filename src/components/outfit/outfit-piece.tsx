@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { isUnoptimizedImage } from "@/lib/provider";
 import { cn } from "@/lib/utils";
 import { type itemSchema, type itemTypeSchema } from "@/trpc/schemas";
 import { trousers } from "@lucide/lab";
@@ -72,6 +73,7 @@ export function OutfitPiece({
           quality={50}
           fill={true}
           sizes="(max-width: 768px) 128px, 256px"
+          unoptimized={isUnoptimizedImage(item.image)}
         />
       )}
       {!item && type === "head" && <Cat size={36} />}

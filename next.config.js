@@ -37,6 +37,11 @@ const config = {
         protocol: "https",
         hostname: "image.hm.com",
       },
+      {
+        protocol: "https",
+        hostname: "media.gucci.com",
+        pathname: "**",
+      },
     ],
   },
 };
