@@ -47,7 +47,7 @@ export default async function Footer() {
         </nav>
         <div className="flex flex-col justify-end">
           <Link
-            href="https://github.com/pkunv"
+            href="https://kunv.dev"
             target="_blank"
             className="text-right text-xl text-muted-foreground hover:underline"
           >
