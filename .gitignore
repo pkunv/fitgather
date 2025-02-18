@@ -50,3 +50,7 @@ yarn-error.log*
 /playwright/.cache/
 
 /e2e/.auth
+
+services/spatula/node_modules
+apps/www/node_modules
+apps/www/.next
