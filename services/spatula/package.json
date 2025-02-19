@@ -16,8 +16,9 @@
 	},
 	"scripts": {
 		"dev": "tsx src/index.ts --watch",
-		"db:gen": "npx prisma generate",
-		"db:push": "prisma db push"
+		"db:generate": "npx prisma generate",
+		"db:push": "prisma db push",
+		"db:studio": "prisma studio"
 	},
 	"author": "pkunv",
 	"license": "ISC",
