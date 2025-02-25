@@ -3,19 +3,27 @@
 	"version": "0.1.0",
 	"description": "Web scraping service for Fitgather",
 	"main": "index.js",
+	"type": "module",
 	"devDependencies": {
 		"@eslint/js": "^9.20.0",
 		"@types/express": "^5.0.0",
+		"@types/html-minifier-terser": "^7.0.2",
 		"@types/node": "^22.13.4",
 		"@types/selenium-webdriver": "^4.1.28",
+		"esbuild": "^0.25.0",
 		"eslint": "^9.20.1",
 		"globals": "^14.0.0",
+		"prettier": "^3.5.1",
 		"prisma": "^6.3.1",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.24.1"
 	},
 	"scripts": {
 		"dev": "tsx src/index.ts --watch",
+		"build:service": "esbuild src/index.ts --bundle --platform=node --format=esm --main-fields=module,main --outfile=dist/index.js --packages=external",
+		"build:process": "esbuild src/process.ts --bundle --platform=node --format=esm --main-fields=module,main --outfile=dist/process.js --packages=external",
+		"build": "npm run build:service && npm run build:process",
+		"start": "node dist/process.js",
 		"db:generate": "npx prisma generate",
 		"db:push": "prisma db push",
 		"db:studio": "prisma studio"
@@ -24,11 +32,16 @@
 	"license": "ISC",
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.36.3",
+		"@google/generative-ai": "^0.22.0",
 		"@prisma/client": "^6.3.1",
 		"@t3-oss/env-core": "^0.12.0",
+		"cheerio": "^1.0.0",
 		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
+		"html-minifier-terser": "^7.2.0",
+		"pm2": "^5.4.3",
 		"selenium-webdriver": "^4.28.1",
+		"selenium-with-fingerprints": "^2.0.7",
 		"tsx": "^4.19.2"
 	}
 }

@@ -5,12 +5,15 @@ import { env } from "@/lib/env";
 import { actionLogger, responseLogger } from "@/lib/log";
 import { getFullItem } from "@/scraper";
 import { Anthropic } from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import webdriver from "selenium-webdriver";
 
 export const log = actionLogger();
 export let driver: webdriver.WebDriver | null = null;
 export const app = express();
+
+export const googleGenAI = new GoogleGenerativeAI(env.AI_STUDIO_API_KEY);
 
 export const anthropic = new Anthropic({
 	apiKey: env.ANTHROPIC_API_KEY,
@@ -32,6 +35,8 @@ async function main() {
 
 	await init2Captcha({ driver });
 
+	log.info("Browser is ready for resolving requests");
+
 	return;
 }
 
@@ -49,9 +54,17 @@ app.get("/item", auth, async (req: AuthRequest, res) => {
 		return res.status(500).json({ status: "error", message: "Internal server error" });
 	}
 
-	const item = await getFullItem({ driver, url, anthropic });
-
-	return res.json({ status: "success", item });
+	try {
+		const item = await getFullItem({
+			driver,
+			url,
+			googleGenAI,
+		});
+		return res.json({ status: "success", item });
+	} catch (error) {
+		log.error(`Request failed ${JSON.stringify(error)}`);
+		return res.status(500).json({ status: "error", message: "Internal server error" });
+	}
 });
 
 app.listen(3000, () => {

@@ -20,6 +20,8 @@
 		"spatula:db:push": "npm run db:push --w services/spatula",
 		"spatula:db:studio": "npm run db:studio --w services/spatula",
 		"spatula:dev": "npm run dev --w services/spatula",
+		"spatula:build": "npm run build --w services/spatula",
+		"spatula:start": "npm run start --w services/spatula",
 		"postinstall": "cd apps/www && prisma generate && prisma db push && cd .. && cd services/spatula && prisma generate && primsa db push",
 		"prepare": "husky",
 		"test": "vitest",

@@ -1,31 +1,129 @@
-import { Anthropic } from "@anthropic-ai/sdk";
+import { getPageContent } from "@/driver";
+import { log } from "@/index";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { load } from "cheerio";
+import { minify } from "html-minifier-terser";
 import webdriver from "selenium-webdriver";
 
 export async function getFullItem({
 	driver,
 	url,
-	anthropic,
+	googleGenAI,
 }: {
 	driver: webdriver.WebDriver;
 	url: string;
-	anthropic: Anthropic;
+	googleGenAI: GoogleGenerativeAI;
 }) {
-	await driver.switchTo().newWindow("tab");
+	log.info(`Getting full item from ${url}`);
+	const startTime = Date.now();
 
 	await driver.get(url);
 
-	const pageSource = (await driver.executeScript(
-		`document.querySelector('html').innerHTML`
-	)) as string;
+	const pageSource = await getPageContent(driver, url);
 
-	// close tab
-	await driver.close();
+	// ... after getting page source
+	const pageSourceTime = Date.now();
+	log.info(`Time to get page source: ${pageSourceTime - startTime}ms`);
 
-	const msg = await anthropic.messages.create({
-		model: "claude-3-5-haiku-20241022",
-		max_tokens: 512,
-		temperature: 0,
-		system: `
+	log.info(`Page size before filtering: ${Buffer.byteLength(pageSource, "utf8") / 1024}KB`);
+
+	// filtering html source page content //
+	const $ = load(pageSource);
+
+	$("script, style, iframe, noscript, svg").remove();
+
+	const filteredPageSource = await minify($.html(), {
+		removeAttributeQuotes: true,
+		removeComments: true,
+	});
+
+	// ... after filtering page source
+	const filterTime = Date.now();
+	log.info(`Time to filter page source: ${filterTime - pageSourceTime}ms`);
+
+	log.info(`Page size after filtering: ${Buffer.byteLength(filteredPageSource, "utf8") / 1024}KB`);
+
+	try {
+		let responseText: string | null = null;
+
+		const model = googleGenAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+		const msg = model.generateContent({
+			systemInstruction: `
+							You are a specialized e-commerce parser. When given HTML source code from clothing product pages, extract and return a clean JSON object with the following structure:
+							{
+							'merchant': '', // Store/Company name
+							'brand': '', // Brand name if different from merchant
+							'productName': '', // Full product title
+							'price': '', // Current price (numeric only)
+							'currency': '', // Currency code (e.g., USD, EUR, PLN, CNY, etc.)
+							'imageUrl': '', // Primary product image or og:image
+							}
+
+							Look for these data points in:
+
+									structured data (schema.org/Product)
+									meta tags (especially og: and product-specific)
+									standard HTML elements with common e-commerce classes/IDs
+									microdata attributes
+
+							Return only these specific attributes in valid JSON format, with null for any missing values.
+							`,
+			contents: [
+				{
+					role: "user",
+					parts: [
+						{
+							text: `
+								Fill the following JSON structure, maintain this exact format:
+								{
+									"merchant": String,
+									"brand": String,
+									"productName": String,
+									"price": Number,
+									"currency": String,
+									"imageUrl": String,
+								}
+								Extract product data from this clothing item webpage, please respond with JSON only: <html-source>${filteredPageSource}</html-source>`,
+						},
+					],
+				},
+			],
+			generationConfig: {
+				maxOutputTokens: 512,
+				temperature: 0,
+			},
+		});
+
+		responseText = (await msg).response.text().replaceAll("```json", "").replaceAll("```", "");
+
+		log.info(`AI response: \n ${responseText}`);
+
+		// ... after getting AI response
+		log.info(`Time to get AI response: ${Date.now() - filterTime}ms`);
+		log.info(`Total time: ${Date.now() - startTime}ms`);
+
+		const response: {
+			merchant: string;
+			brand: string;
+			productName: string;
+			price: number;
+			currency: string;
+			imageUrl: string;
+		} = JSON.parse(responseText);
+		return response;
+	} catch (e) {
+		log.error(`Failed to get AI response: ${e}`);
+		throw e;
+	}
+}
+
+/*
+		if (aiProvider === "anthropic") {
+			const msg = await anthropic.messages.create({
+				model: "claude-3-5-sonnet-latest",
+				max_tokens: 512,
+				temperature: 0,
+				system: `
 		You are a specialized e-commerce parser. When given HTML source code from clothing product pages, extract and return a clean JSON object with the following structure:
 		{
 		'merchant': '', // Store/Company name
@@ -45,13 +143,13 @@ export async function getFullItem({
 
 		Return only these specific attributes in valid JSON format, with null for any missing values.
 		`,
-		messages: [
-			{
-				role: "user",
-				content: [
+				messages: [
 					{
-						type: "text",
-						text: `
+						role: "user",
+						content: [
+							{
+								type: "text",
+								text: `
             Fill the following JSON structure, maintain this exact format:
             {
               "merchant": String,
@@ -61,22 +159,12 @@ export async function getFullItem({
               "currency": String,
               "imageUrl": String,
             }
-            Extract product data from this clothing item webpage: <html-source>${pageSource}</html-source>`,
+            Extract product data from this clothing item webpage, please respond with JSON only: <html-source>${filteredPageSource}</html-source>`,
+							},
+						],
 					},
 				],
-			},
-		],
-	});
-
-	const response: {
-		merchant: string;
-		brand: string;
-		productName: string;
-		price: number;
-		currency: string;
-		imageUrl: string;
-		// @ts-expect-error this should work
-	} = JSON.parse(msg.content[0].text);
-
-	return response;
-}
+			});
+			responseText = msg.content[0].text;
+		}
+			*/

@@ -54,3 +54,7 @@ yarn-error.log*
 services/spatula/node_modules
 apps/www/node_modules
 apps/www/.next
+
+services/spatula/data
+services/spatula/out
+services/spatula/dist
