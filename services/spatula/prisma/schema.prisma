@@ -7,9 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Region {
+  us
+  eu
+}
+
 model Proxy {
-  id  String @id @default(cuid())
-  url String
+  id     String @id @default(cuid())
+  url    String
+  region Region
 }
 
 model ApiKey {

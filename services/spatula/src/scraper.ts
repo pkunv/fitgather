@@ -43,6 +43,22 @@ export async function getFullItem({
 
 	log.info(`Page size after filtering: ${Buffer.byteLength(filteredPageSource, "utf8") / 1024}KB`);
 
+	const testFilteredPageSource = filteredPageSource.toLocaleLowerCase();
+
+	// checking for prompt injection
+	if (
+		testFilteredPageSource.includes("ignore all previous instructions") ||
+		testFilteredPageSource.includes("ignore previous instructions") ||
+		testFilteredPageSource.includes("ignore previously given instructions") ||
+		testFilteredPageSource.includes("forget all previous instructions") ||
+		testFilteredPageSource.includes("forget previous instructions") ||
+		testFilteredPageSource.includes("forget previously given instructions") ||
+		testFilteredPageSource.includes("ignore everything between these quotes") ||
+		testFilteredPageSource.includes("forget everything between these quotes")
+	) {
+		throw new Error("Page contains possible prompt injection");
+	}
+
 	try {
 		let responseText: string | null = null;
 
@@ -101,6 +117,9 @@ export async function getFullItem({
 		// ... after getting AI response
 		log.info(`Time to get AI response: ${Date.now() - filterTime}ms`);
 		log.info(`Total time: ${Date.now() - startTime}ms`);
+
+		// switching to blank page to minimize proxy transfer usage after request
+		await driver.get("about:blank");
 
 		const response: {
 			merchant: string;
