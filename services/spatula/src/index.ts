@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { actionLogger, responseLogger } from "@/lib/log";
 import { getFullItem } from "@/scraper";
-import { Anthropic } from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import webdriver from "selenium-webdriver";
@@ -14,10 +13,6 @@ export let driver: webdriver.WebDriver | null = null;
 export const app = express();
 
 export const googleGenAI = new GoogleGenerativeAI(env.AI_STUDIO_API_KEY);
-
-export const anthropic = new Anthropic({
-	apiKey: env.ANTHROPIC_API_KEY,
-});
 
 // @ts-expect-error todo: fix
 app.use(responseLogger);
