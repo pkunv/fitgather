@@ -3,6 +3,7 @@ import { log } from "@/index";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { load } from "cheerio";
 import { minify } from "html-minifier-terser";
+import fetch from "node-fetch";
 import webdriver from "selenium-webdriver";
 
 export async function getFullItem({
@@ -112,6 +113,66 @@ export async function getFullItem({
 
 		responseText = (await msg).response.text().replaceAll("```json", "").replaceAll("```", "");
 
+		const response: {
+			merchant: string | null;
+			brand: string | null;
+			productName: string | null;
+			price: number | null;
+			currency: string | null;
+			imageUrl: string | null;
+			description?: string;
+		} = JSON.parse(responseText);
+
+		// fetch photo if it exists
+		const photoUrl = response.imageUrl;
+		if (photoUrl) {
+			const res = await fetch(photoUrl);
+			const mimeType = res.headers.get("content-type");
+			const buffer = await res.buffer();
+			const imageData = buffer.toString("base64");
+
+			const prompt = `You are a fashion description specialist. Create a brief, simple description of clothing items using the following guidelines:
+			1. Use a comma-separated format
+			2. Start with color and basic item type
+			3. Include only key distinctive features (fit, notable design elements, primary details)
+			4. Keep descriptions between 3-6 key elements
+			5. Use common, straightforward terms
+			6. Avoid complex fashion terminology
+			7. Focus on the most immediately noticeable characteristics
+
+			Examples of expected output format:
+			- "black t-shirt, oversized, small logo, imprint, masculine fitting"
+			- "blue jeans, straight cut, distressed, high waist"
+			- "white hoodie, zip-up, basic, regular fit"
+
+			Provide descriptions in this simple, direct style using only the most essential identifying features.`;
+			const image = {
+				inlineData: {
+					data: imageData,
+					mimeType: mimeType || "image/jpeg",
+				},
+			};
+
+			const result = await model.generateContent({
+				systemInstruction: prompt,
+				contents: [
+					{
+						role: "user",
+						parts: [
+							{
+								...image,
+							},
+							{
+								text: "Please describe this clothing item, without unnecessary introduction.",
+							},
+						],
+					},
+				],
+			});
+
+			response.description = result.response.text();
+		}
+
 		log.info(`AI response: \n ${responseText}`);
 
 		// ... after getting AI response
@@ -121,14 +182,6 @@ export async function getFullItem({
 		// switching to blank page to minimize proxy transfer usage after request
 		await driver.get("about:blank");
 
-		const response: {
-			merchant: string;
-			brand: string;
-			productName: string;
-			price: number;
-			currency: string;
-			imageUrl: string;
-		} = JSON.parse(responseText);
 		return response;
 	} catch (e) {
 		log.error(`Failed to get AI response: ${e}`);
