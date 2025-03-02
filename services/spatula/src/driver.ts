@@ -14,6 +14,8 @@ export async function createDriver({ proxy }: { proxy: string }) {
 
 	options.setPageLoadStrategy("eager");
 
+	options.addArguments("--blink-settings=imagesEnabled=false");
+
 	plugin.setServiceKey(env.FINGERPRINT_KEY);
 
 	log.info("fetching fingerprint");
