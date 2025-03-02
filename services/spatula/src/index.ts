@@ -97,6 +97,6 @@ app.get("/item", auth, async (req: AuthRequest, res) => {
 	}
 });
 
-app.listen(3000, () => {
-	log.info("Listening on port 3000");
+app.listen(parseInt(env.PORT), () => {
+	log.info(`Server is running on port ${env.PORT}`);
 });
