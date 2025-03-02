@@ -74,6 +74,7 @@ export async function getFullItem({
 							'price': '', // Current price (numeric only)
 							'currency': '', // Currency code (e.g., USD, EUR, PLN, CNY, etc.)
 							'imageUrl': '', // Primary product image or og:image
+							'isClothing': '', // Boolean indicating if the page is presenting a product in the clothing category
 							}
 
 							Look for these data points in:
@@ -99,6 +100,7 @@ export async function getFullItem({
 									"price": Number,
 									"currency": String,
 									"imageUrl": String,
+									"isClothing": Boolean
 								}
 								Extract product data from this clothing item webpage, please respond with JSON only: <html-source>${filteredPageSource}</html-source>`,
 						},
@@ -121,11 +123,12 @@ export async function getFullItem({
 			currency: string | null;
 			imageUrl: string | null;
 			description?: string;
+			isClothing: boolean | null;
 		} = JSON.parse(responseText);
 
 		// fetch photo if it exists
 		const photoUrl = response.imageUrl;
-		if (photoUrl) {
+		if (photoUrl && response.isClothing) {
 			const res = await fetch(photoUrl);
 			const mimeType = res.headers.get("content-type");
 			const buffer = await res.buffer();
