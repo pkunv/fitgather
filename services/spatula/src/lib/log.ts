@@ -23,13 +23,15 @@ export const responseLogger = (req: AuthRequest, res: Response, next: NextFuncti
 	next();
 };
 
-export function actionLogger() {
+export function actionLogger(id?: string) {
 	return {
 		info: (message: string) => {
-			return console.log(`[FITGATHER-SPATULA] [${getLocalISOString()}] [INFO] - ${message}`);
+			return console.log(
+				`[FITGATHER-SPATULA] [${getLocalISOString()}] ${id ? `[${id}]` : ""} [INFO] - ${message}`
+			);
 		},
 		error: (message: string) => {
-			const errorString = `[FITGATHER-SPATULA] [${getLocalISOString()}] [ERROR] - ${message}`;
+			const errorString = `[FITGATHER-SPATULA] [${getLocalISOString()}] ${id ? `[${id}]` : ""} [ERROR] - ${message}`;
 			console.error(errorString);
 			return {
 				throwError: () => {

@@ -1,6 +1,6 @@
-import { log } from "@/index";
 import { env } from "@/lib/env";
 import { timeout as _timeout } from "@/lib/utils";
+import { log } from "@/resolver";
 import path from "path";
 import webdriver, { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome.js";
@@ -269,7 +269,7 @@ export async function checkForElement({
 export async function getPageContent(
 	driver: webdriver.WebDriver,
 	url: string,
-	timeout: number = 10000
+	timeout: number = 6500
 ): Promise<string> {
 	if (!driver) {
 		throw new Error("WebDriver instance is required");

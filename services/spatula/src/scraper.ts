@@ -1,5 +1,5 @@
-import { getPageContent } from "@/driver";
-import { log } from "@/index";
+import { getPageContent } from "@/lib/driver";
+import { log } from "@/resolver";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { load } from "cheerio";
 import { minify } from "html-minifier-terser";
@@ -125,6 +125,17 @@ export async function getFullItem({
 			description?: string;
 			isClothing: boolean | null;
 		} = JSON.parse(responseText);
+
+		// adjustment to the response
+		response.price = response.price ? parseFloat(response.price.toString()) : null;
+
+		if (response.imageUrl && response.imageUrl.startsWith("//")) {
+			response.imageUrl = "https:" + response.imageUrl;
+		}
+
+		if (response.brand === null && response.merchant !== null) {
+			response.brand = response.merchant;
+		}
 
 		// fetch photo if it exists
 		const photoUrl = response.imageUrl;

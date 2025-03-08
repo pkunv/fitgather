@@ -23,3 +23,11 @@ model ApiKey {
   userId String
   secret String
 }
+
+model Resolver {
+  id              String    @id @default(cuid())
+  isAvailable     Boolean   @default(false)
+  requestsInQueue Int       @default(0)
+  createdAt       DateTime  @default(now())
+  lastRequestAt   DateTime?
+}

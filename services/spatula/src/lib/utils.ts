@@ -1,4 +1,4 @@
-import { log } from "@/index";
+import { log } from "@/resolver";
 import type { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function timeout(ms: number) {
