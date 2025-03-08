@@ -33,8 +33,8 @@ jobs:
           cat apps/www/.env
       - name: Install dependencies
         run: npm ci --workspace apps/www --force
-      - name: Generate Prisma
-        run: npm run www:db:generate
+      - name: Migrate Prisma
+        run: npm run www:db:migrate
       - name: Push Prisma
         run: npm run www:db:push
       - name: Install Playwright Browsers
