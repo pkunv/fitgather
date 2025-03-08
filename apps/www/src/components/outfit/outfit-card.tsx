@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getOutfitItems } from "@/lib/item";
-import { isUnoptimizedImage } from "@/lib/provider";
 import { type RouterOutputs } from "@/trpc/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,7 +41,6 @@ export function OutfitCard({
               alt={item.title}
               width={54}
               height={54}
-              unoptimized={isUnoptimizedImage(item.image)}
             />
           ))}
         </CardContent>

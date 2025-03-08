@@ -1,7 +1,12 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { isUnoptimizedImage } from "@/lib/provider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { type itemSchema, type itemTypeSchema } from "@/trpc/schemas";
 import { trousers } from "@lucide/lab";
@@ -35,7 +40,7 @@ export function OutfitPiece({
     };
     onClick && onClick(data);
   };
-  return (
+  const content = (
     <div
       onClick={onClickHandler}
       className={cn(
@@ -73,7 +78,6 @@ export function OutfitPiece({
           quality={50}
           fill={true}
           sizes="(max-width: 768px) 128px, 256px"
-          unoptimized={isUnoptimizedImage(item.image)}
         />
       )}
       {!item && type === "head" && <Cat size={36} />}
@@ -83,5 +87,20 @@ export function OutfitPiece({
       {!item && type === "shoes" && <Footprints size={36} />}
       {!item && accessory && <Plus size={12} />}
     </div>
+  );
+
+  if (!item?.description) {
+    return content;
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs break-words text-sm">{item.description}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

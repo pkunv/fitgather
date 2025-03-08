@@ -15,6 +15,7 @@ export const itemSchema = {
     image: z.string().url(),
     price: z.number(),
     currency: z.string(),
+    description: z.string().optional(),
   }),
   create: z.object({
     url: z

@@ -9,6 +9,10 @@ const config = {
   images: {
     remotePatterns: [
       {
+        protocol: "https",
+        hostname: "ucarecdn.com",
+      },
+      {
         // Kinde Auth fallback avatar
         protocol: "https",
         hostname: "gravatar.com",

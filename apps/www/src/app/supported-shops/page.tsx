@@ -23,9 +23,11 @@ export default function SupportedShopsPage() {
     <>
       <TypographyH2>Supported shops</TypographyH2>
       <TypographyMuted>
-        Here is a list of supported E-Commerce clothing websites. Every shop
-        that is not supported but it is on the list, will be supported in the
-        future.
+        Here is a list of oficially supported E-Commerce clothing websites, that
+        has been tested.
+        <br />
+        Other e-commerce shops are also possibly supported! fitgather will try
+        its best to automatically handle it for you.
       </TypographyMuted>
       <Table>
         <TableHeader>
@@ -33,18 +35,17 @@ export default function SupportedShopsPage() {
             <TableHead>Shop</TableHead>
             <TableHead>Regions</TableHead>
             <TableHead>Supported</TableHead>
+            <TableHead>Photo Analysis</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {providers
+          {[...providers]
             .sort((a, b) => {
-              if (a.resolve === null && b.resolve !== null) {
-                return 1;
-              }
-              if (a.resolve !== null && b.resolve === null) {
-                return -1;
-              }
-              return 0;
+              // Sort by isSupported (true first)
+              if (a.isSupported && !b.isSupported) return -1;
+              if (!a.isSupported && b.isSupported) return 1;
+              // If both have same support status, sort alphabetically by name
+              return a.name.localeCompare(b.name);
             })
             .map((provider) => {
               return (
@@ -60,7 +61,20 @@ export default function SupportedShopsPage() {
                   </TableCell>
                   <TableCell>{provider.regions?.join(", ")}</TableCell>
                   <TableCell>
-                    {provider.resolve !== null ? <Check /> : <X />}
+                    {provider.isSupported === true &&
+                    provider.regions[0] === "All" ? (
+                      <Check />
+                    ) : provider.isSupported &&
+                      provider.regions[0] !== "All" ? (
+                      "Not guaranteed"
+                    ) : provider.isSupported === "partially" ? (
+                      "Partially"
+                    ) : (
+                      <X />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {provider.isPhotoAnalysisSupported ? <Check /> : <X />}
                   </TableCell>
                 </TableRow>
               );

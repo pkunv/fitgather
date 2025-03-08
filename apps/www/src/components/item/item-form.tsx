@@ -25,6 +25,19 @@ import { type z } from "zod";
 
 const formSchema = itemSchema.create;
 
+const loadingMessages = [
+  "Inspecting fabric quality...",
+  "Looking around for pricing...",
+  "Closing cookie pop-ups...",
+  "Checking if it's machine washable...",
+  "Measuring the inseam...",
+  "Consulting with fashion experts...",
+  "Analyzing the latest trends...",
+  "Checking size availability...",
+  "Reading customer reviews...",
+  "Verifying authenticity...",
+];
+
 export function ItemForm({
   action,
   selectedPiece,
@@ -63,7 +76,17 @@ export function ItemForm({
       toast.info("That's a demo though!");
       return;
     }
-    createItem.mutate(values);
+
+    const intervalId = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * loadingMessages.length);
+      toast.info(loadingMessages[randomIndex], { duration: 3000 });
+    }, 3000);
+
+    createItem.mutate(values, {
+      onSettled: () => {
+        clearInterval(intervalId);
+      },
+    });
   }
 
   useEffect(() => {
@@ -99,7 +122,7 @@ export function ItemForm({
                 >
                   supported shops
                 </Link>{" "}
-                list to see if you can submit your item.
+                page for more info on submitting items.
               </FormDescription>
               <FormMessage />
               <FormMessage>{form.formState.errors.type?.message}</FormMessage>
@@ -109,9 +132,12 @@ export function ItemForm({
 
         <ItemSelect
           onSelect={(item) => {
+            // @ts-expect-error - TODO: fix this
             onItemCreate({
               ...item,
               type: item.type as "head" | "top" | "bottom" | "shoes",
+              merchant: item.brand,
+              isClothing: true,
             });
             form.setValue("url", item.url);
           }}

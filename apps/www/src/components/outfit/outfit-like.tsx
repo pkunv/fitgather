@@ -1,8 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { TypographyMuted } from "@/components/ui/typography";
+import { type User } from "@/server/api/trpc";
 import { api, type RouterOutputs } from "@/trpc/react";
-import type { KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export function OutfitLike({
   user,
 }: {
   data: Exclude<RouterOutputs["outfit"]["get"], null>;
-  user: KindeUser | null;
+  user: User | null;
 }) {
   const [userLiked, setUserLiked] = useState(
     data.likes.find((like) => like.userId === user?.id) !== undefined,

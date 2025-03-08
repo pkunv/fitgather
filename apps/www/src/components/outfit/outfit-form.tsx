@@ -23,9 +23,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { TypographyMuted } from "@/components/ui/typography";
 import { addItem, deleteItem, getOutfitItems } from "@/lib/item";
 import { cn } from "@/lib/utils";
+import { User } from "@/server/api/trpc";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
-import { type KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -42,7 +42,7 @@ export function OutfitForm({
 }: {
   data?: RouterOutputs["outfit"]["get"];
   action: "create" | "update";
-  user: KindeUser | null;
+  user: User | null;
 }) {
   const router = useRouter();
 

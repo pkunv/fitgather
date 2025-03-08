@@ -12,6 +12,18 @@ import { ZodError } from "zod";
 
 import { db } from "@/server/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { KindeUserProperties } from "@kinde-oss/kinde-auth-nextjs/types";
+
+export interface User {
+  id: string;
+  email?: string | null;
+  given_name?: string | null;
+  family_name?: string | null;
+  picture?: string | null;
+  username?: string | null;
+  fullname?: string | null;
+  properties?: KindeUserProperties<Record<string, unknown>>;
+}
 
 /**
  * 1. CONTEXT

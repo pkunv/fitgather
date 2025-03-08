@@ -1,8 +1,5 @@
-import { env } from "@/env";
-import { providers } from "@/lib/provider";
 import { type itemSchema, type outfitSchema } from "@/trpc/schemas";
 import { type Dispatch, type SetStateAction } from "react";
-import type urlMetadata from "url-metadata";
 import { type z } from "zod";
 
 export function getOutfitItems(outfit: z.infer<typeof outfitSchema.create>) {
@@ -72,25 +69,4 @@ export function deleteItem({
     window.localStorage.setItem("outfit", JSON.stringify(newState));
     return newState;
   });
-}
-
-export function resolveItem(metadata: urlMetadata.Result) {
-  if (env.NODE_ENV === "development") {
-    console.dir(metadata, { depth: null });
-  }
-
-  const provider = providers.find((provider) =>
-    (metadata.requestUrl as string).includes(provider.name),
-  );
-  if (!provider) {
-    throw new Error("No provider found for this item!", {
-      cause: "No provider found for this item!",
-    });
-  }
-
-  if (provider.resolve === null) {
-    throw new Error(`${provider.fullname} is not supported yet! Stay tuned.`);
-  }
-
-  return provider.resolve(metadata);
 }

@@ -4,7 +4,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { type itemSchema, outfitSchema } from "@/trpc/schemas";
+import { outfitSchema } from "@/trpc/schemas";
+import { type Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -24,11 +25,16 @@ export const outfitInclude = {
           price: true,
           currency: true,
           image: true,
+          description: true,
         },
       },
     },
   },
 };
+
+type OutfitWithIncludes = Prisma.OutfitGetPayload<{
+  include: typeof outfitInclude;
+}>;
 
 export const outfitRouter = createTRPCRouter({
   getMany: publicProcedure
@@ -39,87 +45,63 @@ export const outfitRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return (
-        await ctx.db.outfit.findMany({
-          where: {
-            userId:
-              input.type === "user" && ctx.session?.user
-                ? ctx.session.user.id
-                : undefined,
-            OR: [
-              {
-                items: {
-                  some: {
-                    item: {
-                      brand: {
-                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
-                      },
-                      url: {
-                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
-                      },
-                      title: {
-                        startsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
-                      },
-                    },
-                  },
-                },
-              },
-              {
-                items: {
-                  some: {
-                    item: {
-                      brand: {
-                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
-                      },
-                      url: {
-                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
-                      },
-                      title: {
-                        endsWith: `%${input.searchQuery?.toLocaleLowerCase()}%`,
+      const searchQuery = input.searchQuery?.toLowerCase();
+      const results = await ctx.db.outfit.findMany({
+        where: {
+          userId:
+            input.type === "user" && ctx.session?.user
+              ? ctx.session.user.id
+              : undefined,
+          ...(searchQuery
+            ? {
+                OR: [
+                  {
+                    items: {
+                      some: {
+                        item: {
+                          OR: [
+                            { description: { contains: searchQuery } },
+                            { brand: { contains: searchQuery } },
+                            { title: { contains: searchQuery } },
+                          ],
+                        },
                       },
                     },
                   },
-                },
-              },
-              {
-                name: {
-                  startsWith: input.searchQuery?.toLocaleLowerCase(),
-                  contains: input.searchQuery?.toLocaleLowerCase(),
-                },
-              },
-              {
-                user: {
-                  fullname: {
-                    contains: input.searchQuery?.toLocaleLowerCase(),
+                  { name: { contains: searchQuery } },
+                  {
+                    user: {
+                      OR: [
+                        { fullname: { contains: searchQuery } },
+                        { username: { contains: searchQuery } },
+                      ],
+                    },
                   },
-                  username: {
-                    contains: input.searchQuery?.toLocaleLowerCase(),
-                  },
-                },
-              },
-            ],
-          },
-          include: outfitInclude,
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: input.type === "newest" ? 5 : undefined,
-        })
-      ).map((outfit) => {
-        return {
-          id: outfit.id,
-          code: outfit.code,
-          name: outfit.name,
-          user: outfit.user,
-          createdAt: outfit.createdAt,
-          likes: outfit.likes,
-          outfit: getOutfitFromItems(
-            outfit.items.map(
-              (item) => item.item as z.infer<typeof itemSchema.get>,
-            ),
-          ),
-        };
+                ],
+              }
+            : {}),
+        },
+        include: outfitInclude,
+        orderBy: { createdAt: "desc" },
+        take: input.type === "newest" ? 5 : undefined,
       });
+
+      return results.map((outfit: OutfitWithIncludes) => ({
+        id: outfit.id,
+        code: outfit.code,
+        name: outfit.name,
+        user: outfit.user,
+        createdAt: outfit.createdAt,
+        likes: outfit.likes,
+        outfit: getOutfitFromItems(
+          outfit.items.map((item) => ({
+            ...item.item,
+            type: item.item.type as "head" | "top" | "bottom" | "shoes",
+            accessory: Boolean(item.item.accessory),
+            description: item.item.description ?? undefined,
+          })),
+        ),
+      }));
     }),
   get: publicProcedure
     .input(z.object({ id: z.number().optional(), code: z.string().optional() }))
@@ -138,9 +120,12 @@ export const outfitRouter = createTRPCRouter({
         createdAt: outfit.createdAt,
         likes: outfit.likes,
         outfit: getOutfitFromItems(
-          outfit.items.map(
-            (item) => item.item as z.infer<typeof itemSchema.get>,
-          ),
+          outfit.items.map((item) => ({
+            ...item.item,
+            type: item.item.type as "head" | "top" | "bottom" | "shoes",
+            accessory: Boolean(item.item.accessory),
+            description: item.item.description ?? undefined,
+          })),
         ),
       };
     }),
@@ -172,6 +157,36 @@ export const outfitRouter = createTRPCRouter({
           message: "You need to add at least one item to your outfit.",
         });
       }
+
+      // Verify items against ResolvedItem records
+      for (const item of items) {
+        const resolvedItem = await ctx.db.resolvedItem.findUnique({
+          where: { url: item.url },
+        });
+
+        if (!resolvedItem) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "One or more items have not been properly resolved. Please try adding them again.",
+          });
+        }
+
+        // Check if all properties match what was resolved
+        if (
+          resolvedItem.provider !== item.provider ||
+          resolvedItem.brand !== item.brand ||
+          resolvedItem.title !== item.title ||
+          resolvedItem.image !== item.image
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Item properties do not match what was previously resolved. Please try adding the item again.",
+          });
+        }
+      }
+
       // find duplicate items by the same url property
       const duplicateItems = items.filter(
         (item, index, self) =>
@@ -251,6 +266,36 @@ export const outfitRouter = createTRPCRouter({
           message: "You need to add at least one item to your outfit.",
         });
       }
+
+      // Verify items against ResolvedItem records
+      for (const item of items) {
+        const resolvedItem = await ctx.db.resolvedItem.findUnique({
+          where: { url: item.url },
+        });
+
+        if (!resolvedItem) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "One or more items have not been properly resolved. Please try adding them again.",
+          });
+        }
+
+        // Check if all properties match what was resolved
+        if (
+          resolvedItem.provider !== item.provider ||
+          resolvedItem.brand !== item.brand ||
+          resolvedItem.title !== item.title ||
+          resolvedItem.image !== item.image
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Item properties do not match what was previously resolved. Please try adding the item again.",
+          });
+        }
+      }
+
       const outfit = await ctx.db.outfit.findUnique({
         where: { id: input.id },
         include: outfitInclude,

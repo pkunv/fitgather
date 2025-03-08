@@ -1,7 +1,8 @@
 import { OutfitLike } from "@/components/outfit/outfit-like";
 import { TypographyH1, TypographyMuted } from "@/components/ui/typography";
+import { User } from "@/server/api/trpc";
 import { type RouterOutputs } from "@/trpc/react";
-import { type KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
+
 import Image from "next/image";
 
 export function OutfitSummary({
@@ -9,7 +10,7 @@ export function OutfitSummary({
   user,
 }: {
   data: Exclude<RouterOutputs["outfit"]["get"], null>;
-  user: KindeUser | null;
+  user: User | null;
 }) {
   return (
     <>

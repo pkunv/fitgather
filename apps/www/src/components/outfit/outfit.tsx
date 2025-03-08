@@ -25,12 +25,17 @@ export function Outfit({
   >;
 }) {
   const [expandImage, setExpandImage] = useState<string | false>(false);
+  const [expandedItem, setExpandedItem] = useState<z.infer<
+    typeof itemSchema.get
+  > | null>(null);
+
   return (
     <>
       <Dialog
         open={expandImage !== false}
         onOpenChange={() => {
           setExpandImage(false);
+          setExpandedItem(null);
         }}
       >
         <DialogContent className="min-h-96">
@@ -43,6 +48,11 @@ export function Outfit({
               placeholder="blur"
               alt="Expanded image"
             />
+            {expandedItem?.description && (
+              <p className="mt-4 text-center text-sm text-muted-foreground">
+                {expandedItem.description}
+              </p>
+            )}
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -55,9 +65,12 @@ export function Outfit({
             item={outfit.head.main}
             active={selectedPiece?.type === "head" && !selectedPiece?.accessory}
             onClick={setSelectedPiece}
-            onExpandImage={(url) =>
-              setExpandImage ? setExpandImage(url) : null
-            }
+            onExpandImage={(url) => {
+              if (setExpandImage) {
+                setExpandImage(url);
+                setExpandedItem(outfit.head.main);
+              }
+            }}
           />
         </div>
         <div className="col-start-2 row-start-2">
@@ -67,7 +80,10 @@ export function Outfit({
             item={outfit.top.main}
             active={selectedPiece?.type === "top" && !selectedPiece?.accessory}
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.top.main);
+            }}
           />
         </div>
         <div className="col-start-2 row-start-3">
@@ -79,7 +95,10 @@ export function Outfit({
               selectedPiece?.type === "bottom" && !selectedPiece?.accessory
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.bottom.main);
+            }}
           />
         </div>
         <div className="col-start-2 row-start-4">
@@ -91,7 +110,10 @@ export function Outfit({
               selectedPiece?.type === "shoes" && !selectedPiece?.accessory
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.shoes.main);
+            }}
           />
         </div>
         {/* ACCESSORIES HEAD LEFT TO RIGHT */}
@@ -109,7 +131,10 @@ export function Outfit({
               outfit.head.accessories?.[0] ? outfit.head.accessories[0] : null
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.head.accessories?.[0] ?? null);
+            }}
           />
         </div>
         <div className="col-start-3 row-start-1">
@@ -126,7 +151,10 @@ export function Outfit({
               outfit.head.accessories?.[1] ? outfit.head.accessories[1] : null
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.head.accessories?.[1] ?? null);
+            }}
           />
         </div>
         {/* ACCESSORIES TOP LEFT TO RIGHT */}
@@ -144,7 +172,10 @@ export function Outfit({
               outfit.top.accessories?.[0] ? outfit.top.accessories[0] : null
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.top.accessories?.[0] ?? null);
+            }}
           />
         </div>
         <div className="col-start-3 row-start-2">
@@ -161,7 +192,10 @@ export function Outfit({
               outfit.top.accessories?.[1] ? outfit.top.accessories[1] : null
             }
             onClick={setSelectedPiece}
-            onExpandImage={(url) => setExpandImage(url)}
+            onExpandImage={(url) => {
+              setExpandImage(url);
+              setExpandedItem(outfit.top.accessories?.[1] ?? null);
+            }}
           />
         </div>
       </div>
