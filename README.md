@@ -1,4 +1,4 @@
-# ![Favicon](https://raw.githubusercontent.com/pkunv/fitgather/main/public/favicon.ico) fitgather
+# ![Favicon](https://raw.githubusercontent.com/pkunv/fitgather/main/apps/www/public/favicon.ico) fitgather
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/pkunv/fitgather)
 ![GitHub package.json next.js dependency version](https://img.shields.io/github/package-json/dependency-version/pkunv/fitgather/next)
