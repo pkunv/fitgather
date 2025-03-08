@@ -22,7 +22,7 @@
 		"spatula:dev": "npm run dev --w services/spatula",
 		"spatula:build": "npm run build --w services/spatula",
 		"spatula:start": "npm run start --w services/spatula",
-		"postinstall": "cd apps/www && prisma generate && prisma db push && cd .. && cd services/spatula && prisma generate && primsa db push",
+		"postinstall": "cd apps/www && prisma generate && prisma db push && cd .. && cd ..",
 		"prepare": "husky",
 		"test": "vitest",
 		"test:e2e": "playwright test"
