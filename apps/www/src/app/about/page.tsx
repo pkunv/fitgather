@@ -8,9 +8,9 @@ import {
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About  - Your Personal Outfit Collection Tool",
+  title: "About",
   description:
-    "Discover how FitGather helps you create and visualize outfits from multiple online stores before making a purchase decision.",
+    "Discover how fitgather helps you create and visualize outfits from multiple online stores before making a purchase decision.",
 };
 
 export default function About() {
