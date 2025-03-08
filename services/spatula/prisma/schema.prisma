@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Region {
+  us
+  eu
+}
+
+model Proxy {
+  id     String @id @default(cuid())
+  url    String
+  region Region
+}
+
+model ApiKey {
+  id     String @id @default(cuid())
+  userId String
+  secret String
+}
+
+model Resolver {
+  id              String    @id @default(cuid())
+  isAvailable     Boolean   @default(false)
+  requestsInQueue Int       @default(0)
+  createdAt       DateTime  @default(now())
+  lastRequestAt   DateTime?
+}
