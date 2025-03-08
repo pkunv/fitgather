@@ -1,0 +1,9 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 68" width="84" height="68">
+	<title>logo-black</title>
+	<style>
+		.s0 { fill: #000000;stroke: #000000;stroke-linecap: round } 
+	</style>
+	<g id="svgGroup">
+		<path fill-rule="evenodd" class="s0" d="m63.3 67.3h-16.5l8.1-24.8h-29.2l-8.1 24.8h-16.6l21.4-66h16.6l-8 24.7 32.8-24.7h20.9l-32.8 24.7h24.8zm174.9 0l21.4-66h16.7l-16 49.5h14.3l44-50.8 11.8 8-51.6 59.3zm-26.3-49.5h-21.3l-16.1 49.5h-16.6l21.4-66h44.7l14.5 21.3-14.5 44.7h-16.6l12.3-37.8zm-100.7 33h21.3l16-49.5h16.6l-21.4 66h-44.7l-14.5-21.3 14.5-44.7h16.6l-12.2 37.8z"/>
+	</g>
+</svg>

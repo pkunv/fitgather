@@ -26,8 +26,8 @@ export function HowItWorks() {
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary p-2 text-primary-foreground">
               1.
             </span>
-            First, grab a link with some type of clothing from a website that
-            fitgather supports.
+            First, grab a link with some type of clothing from a website of your
+            choice.
           </div>
           <InputWithIcon
             readOnly
