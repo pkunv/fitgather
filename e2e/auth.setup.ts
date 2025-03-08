@@ -14,7 +14,7 @@ setup("authenticate", async ({ page }) => {
 	await page.goto("/");
 	await page.getByRole("link", { name: "Sign in" }).click();
 	await page.getByLabel("Username").fill(process.env.E2E_USERNAME);
-	await page.getByRole("button", { name: "Continue" }).click();
+	await page.getByRole("button", { name: "Continue", exact: true }).click();
 	await page.getByLabel("Password", { exact: true }).fill(process.env.E2E_PASSWORD);
 	await page.getByRole("button", { name: "Continue", exact: true }).click();
 
