@@ -3,7 +3,6 @@ import { env } from "@/env";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { itemSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
-import { uploadFromUrl } from "@uploadcare/upload-client";
 import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
@@ -115,11 +114,35 @@ export const itemRouter = createTRPCRouter({
             "https://ucarecdn.com/f994fc46-eec7-47a1-a72e-707e83c36c9a/noimg.png";
         } else {
           try {
-            const result = await uploadFromUrl(item.imageUrl, {
-              publicKey: env.UPLOADCARE_PUBLIC_KEY,
+            const formData = new FormData();
+            formData.append("pub_key", env.UPLOADCARE_PUBLIC_KEY);
+            formData.append("source_url", item.imageUrl);
+            formData.append("metadata[subsystem]", "uploader");
+
+            const res = await fetch(`https://upload.uploadcare.com/from_url/`, {
+              method: "POST",
+              body: formData,
             });
 
-            item.image = result.cdnUrl;
+            const result = (await res.json()) as { token: string };
+
+            const status = await fetch(
+              `https://upload.uploadcare.com/from_url/status?token=${result.token}`,
+            );
+
+            const statusResult = (await status.json()) as {
+              file_id: string;
+              status: "success" | "error" | "progress";
+              filename: string;
+            };
+
+            if (statusResult.status === "error") {
+              throw new Error("Failed to upload image to Uploadcare");
+            }
+
+            if (statusResult.status === "success") {
+              item.image = `https://ucarecdn.com/${statusResult.file_id}/${statusResult.filename}`;
+            }
           } catch (error) {
             item.image =
               "https://ucarecdn.com/f994fc46-eec7-47a1-a72e-707e83c36c9a/noimg.png";
