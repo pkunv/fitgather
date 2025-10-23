@@ -18,6 +18,8 @@ export const env = createEnv({
     KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url(),
     KINDE_POST_LOGIN_REDIRECT_URL: z.string().url(),
     UPLOADCARE_PUBLIC_KEY: z.string(),
+    ZYTE_API_KEY: z.string(),
+    AI_STUDIO_API_KEY: z.string(),
   },
 
   /**
@@ -43,6 +45,8 @@ export const env = createEnv({
     KINDE_POST_LOGOUT_REDIRECT_URL: process.env.KINDE_POST_LOGOUT_REDIRECT_URL,
     KINDE_POST_LOGIN_REDIRECT_URL: process.env.KINDE_POST_LOGIN_REDIRECT_URL,
     UPLOADCARE_PUBLIC_KEY: process.env.UPLOADCARE_PUBLIC_KEY,
+    ZYTE_API_KEY: process.env.ZYTE_API_KEY,
+    AI_STUDIO_API_KEY: process.env.AI_STUDIO_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
