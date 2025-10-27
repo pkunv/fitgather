@@ -145,13 +145,14 @@ export const itemRouter = createTRPCRouter({
           3. Include only key distinctive features (fit, notable design elements, primary details)
           4. Keep descriptions between 3-6 key elements
           5. Use common, straightforward terms
-          6. Avoid complex fashion terminology
-          7. Focus on the most immediately noticeable characteristics
+          6. Focus on the most immediately noticeable characteristics
+          7. Include possible subculture, trend or music genre related to the item
 
           Examples of expected output format:
-          - "black t-shirt, oversized, small logo, imprint, masculine fitting"
-          - "blue jeans, straight cut, distressed, high waist"
-          - "white hoodie, zip-up, basic, regular fit"
+          - "black t-shirt, oversized, small logo, imprint, masculine fitting, subculture: hip-hop"
+          - "blue jeans, straight cut, distressed, high waist, subculture: grunge, casual, streetwear"
+          - "white hoodie, zip-up, basic, regular fit, subculture: streetwear, casual"
+          - "black hoodie with white gothic print, oversized, subculture: edgy, 'opium', rage trap"
 
           Provide descriptions in this simple, direct style using only the most essential identifying features.`;
           const image = {
@@ -196,7 +197,7 @@ export const itemRouter = createTRPCRouter({
 
             const result = (await res.json()) as { token: string };
 
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await new Promise((resolve) => setTimeout(resolve, 400));
 
             const status = await fetch(
               `https://upload.uploadcare.com/from_url/status?token=${result.token}`,
@@ -213,7 +214,8 @@ export const itemRouter = createTRPCRouter({
             }
 
             if (statusResult.status === "progress") {
-              await new Promise((resolve) => setTimeout(resolve, 500));
+              console.log("[item.create] Uploadcare status is progress");
+              await new Promise((resolve) => setTimeout(resolve, 600));
 
               const renewedStatus = await fetch(
                 `https://upload.uploadcare.com/from_url/status?token=${result.token}`,
@@ -223,6 +225,10 @@ export const itemRouter = createTRPCRouter({
                 status: "success" | "error" | "progress";
                 filename: string;
               };
+              item.image = `https://ucarecdn.com/${statusResult.file_id}/${statusResult.filename}`;
+              console.log(
+                "[item.create] Uploadcare status is success after trying again",
+              );
             }
 
             if (statusResult.status === "success") {
@@ -254,6 +260,12 @@ export const itemRouter = createTRPCRouter({
             image: item.image,
           },
         });
+
+        // pretty print item
+        console.log(
+          "[item.create] Item created: ",
+          JSON.stringify(item, null, 2),
+        );
 
         return {
           ...item,

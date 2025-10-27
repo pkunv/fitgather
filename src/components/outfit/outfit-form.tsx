@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { type User } from "@/server/api/trpc";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
+import { ResetIcon } from "@radix-ui/react-icons";
 import { Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -195,8 +196,12 @@ export function OutfitForm({
                       onOpenChange={setResetOutfitOpen}
                     >
                       <AlertDialogTrigger
-                        className={cn(buttonVariants({ variant: "secondary" }))}
+                        className={cn(
+                          buttonVariants({ variant: "secondary" }),
+                          "gap-2",
+                        )}
                       >
+                        <ResetIcon />
                         Reset
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -212,6 +217,7 @@ export function OutfitForm({
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
+                            className="gap-2"
                             onClick={() => {
                               setOutfit(emptyOutfit);
                               setSelectedPiece(null);
@@ -219,6 +225,7 @@ export function OutfitForm({
                               setResetOutfitOpen(false);
                             }}
                           >
+                            <ResetIcon />
                             Reset
                           </AlertDialogAction>
                         </AlertDialogFooter>
