@@ -41,7 +41,10 @@ export function OutfitSummaryTable({
             </TableCell>
             <TableCell>
               <Link href={item.url} target="_blank" className="underline">
-                {item.title}
+                {item.title}{" "}
+                {item.brand !== null && item.brand !== "null"
+                  ? `(${item.brand})`
+                  : ""}
               </Link>
             </TableCell>
             <TableCell className="text-right">

@@ -1,4 +1,4 @@
 import { env } from "@/env";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
-export const googleGenAI = new GoogleGenerativeAI(env.AI_STUDIO_API_KEY);
+export const ai = new GoogleGenAI({ apiKey: env.AI_STUDIO_API_KEY });

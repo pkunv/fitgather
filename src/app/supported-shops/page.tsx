@@ -35,7 +35,7 @@ export default function SupportedShopsPage() {
             <TableHead>Shop</TableHead>
             <TableHead>Regions</TableHead>
             <TableHead>Supported</TableHead>
-            <TableHead>Photo Analysis</TableHead>
+            <TableHead>Image Analysis</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

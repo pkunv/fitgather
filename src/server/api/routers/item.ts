@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { env } from "@/env";
-import { googleGenAI } from "@/server/ai";
+import { getItemHTML } from "@/lib/scraping";
+import { ai } from "@/server/ai";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { itemSchema } from "@/trpc/schemas";
+import { Type } from "@google/genai";
 import { TRPCError } from "@trpc/server";
-import { load } from "cheerio";
-import { minify } from "html-minifier-terser";
 import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
@@ -54,156 +54,63 @@ export const itemRouter = createTRPCRouter({
 
       // if any error occurs, it will be catched and a friendly error message will be returned
       try {
-        const scraperResponse = await fetch(`https://api.zyte.com/v1/extract`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Basic ${Buffer.from(`${env.ZYTE_API_KEY}:`).toString("base64")}`,
-          },
-          body: JSON.stringify({
-            url: input.url,
-            browserHtml: true,
-          }),
-        });
-        if (!scraperResponse.ok) {
-          throw new Error("Failed to fetch item from Zyte");
-        }
+        const html = await getItemHTML(input.url);
 
-        const { browserHtml } = (await scraperResponse.json()) as {
-          browserHtml: string;
-        };
-
-        console.log(browserHtml);
-
-        const $ = load(browserHtml);
-
-        $("script, style, iframe, noscript, svg").remove();
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const filteredPageHtml = await minify($.html(), {
-          collapseWhitespace: true,
-          removeComments: true,
-          removeRedundantAttributes: true,
-          removeEmptyAttributes: true,
-          removeEmptyElements: true,
-          removeOptionalTags: true,
-        });
-
-        const filteredPageHtmlLowerCase = filteredPageHtml.toLowerCase();
-
-        // checking for prompt injection
-        if (
-          filteredPageHtmlLowerCase.includes(
-            "ignore all previous instructions",
-          ) ||
-          filteredPageHtmlLowerCase.includes("ignore previous instructions") ||
-          filteredPageHtmlLowerCase.includes(
-            "ignore previously given instructions",
-          ) ||
-          filteredPageHtmlLowerCase.includes(
-            "forget all previous instructions",
-          ) ||
-          filteredPageHtmlLowerCase.includes("forget previous instructions") ||
-          filteredPageHtmlLowerCase.includes(
-            "forget previously given instructions",
-          ) ||
-          filteredPageHtmlLowerCase.includes(
-            "ignore everything between these quotes",
-          ) ||
-          filteredPageHtmlLowerCase.includes(
-            "forget everything between these quotes",
-          ) ||
-          filteredPageHtmlLowerCase.includes("act now as") ||
-          filteredPageHtmlLowerCase.includes("god mode enabled")
-        ) {
-          throw new Error("Page contains possible prompt injection");
-        }
-
-        let responseText: string | null = null;
-
-        const model = googleGenAI.getGenerativeModel({
+        const contentResponse = await ai.models.generateContent({
           model: "gemini-2.5-flash",
-        });
-        const msg = model.generateContent({
-          systemInstruction: `
-							You are a specialized e-commerce parser. When given HTML source code from clothing product pages, extract and return a clean JSON object with the following structure:
-							{
-							'merchant': '', // Store/Company name
-							'brand': '', // Brand name if different from merchant
-							'productName': '', // Full product title
-							'price': '', // Current price (numeric only)
-							'currency': '', // Currency code (e.g., USD, EUR, PLN, CNY, etc.)
-							'imageUrl': '', // Primary product image or og:image
-							'isClothing': '', // Boolean indicating if the page is presenting a product in the clothing category
-							}
-
-							Look for these data points in:
+          config: {
+            systemInstruction: `You are a specialized e-commerce parser. When given HTML source code from clothing product pages, extract and return useful product information, using given schema.Look for these data points in:
 
 									structured data (schema.org/Product)
 									meta tags (especially og: and product-specific)
 									standard HTML elements with common e-commerce classes/IDs
-									microdata attributes
-
-							Return only these specific attributes in valid JSON format, with null for any missing values.
-							`,
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: `
-								Fill the following JSON structure, maintain this exact format:
-								{
-									"merchant": String,
-									"brand": String,
-									"productName": String,
-									"price": Number,
-									"currency": String,
-									"imageUrl": String,
-									"isClothing": Boolean
-								}
-								Extract product data from this clothing item webpage, please respond with JSON only: <html-source>${filteredPageHtml}</html-source>`,
+									microdata attributes`,
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                merchant: {
+                  type: Type.STRING,
+                  description: "Store/Company name",
                 },
-              ],
+                brand: {
+                  type: Type.STRING,
+                  description: "Brand name if different from merchant ",
+                },
+                productName: {
+                  type: Type.STRING,
+                  description: "Full product title",
+                },
+                price: {
+                  type: Type.NUMBER,
+                  description: "Current price (numeric only)",
+                },
+                currency: {
+                  type: Type.STRING,
+                  description: "Currency code (e.g., USD, EUR, PLN, CNY, etc.)",
+                },
+                imageUrl: {
+                  type: Type.STRING,
+                  description: "Primary product image or og:image",
+                },
+                isClothing: {
+                  type: Type.BOOLEAN,
+                  description:
+                    "Boolean indicating if the page is presenting a product in the clothing category",
+                },
+              },
             },
-          ],
-          generationConfig: {
-            maxOutputTokens: 512,
-            temperature: 0,
           },
+          contents: `Extract product data from this clothing item webpage, please respond with JSON only: <html-source>${html}</html-source>`,
         });
 
-        responseText = (await msg).response.text();
-
-        console.log("responseText", responseText);
-        console.log("pagehtml", filteredPageHtml);
-        /*
-        const data = (await response.json()) as {
-          status: "success" | "error";
-          item: {
-            merchant: string | null;
-            brand: string;
-            productName: string | null;
-            price: number;
-            currency: string;
-            imageUrl: string | null;
-            description?: string;
-            isClothing: boolean | null;
-            image: string; // for internal later use
-            title: string; // for internal later use
-            provider: string; // for internal later use to match the schema
-          };
-        };
-        */
-
-        const data = JSON.parse(responseText) as {
+        const data = JSON.parse(contentResponse.text ?? "{}") as unknown as {
           merchant: string | null;
           brand: string | null;
           productName: string | null;
           price: number | null;
           currency: string | null;
           imageUrl: string | null;
-          description?: string;
           isClothing: boolean | null;
         };
 
@@ -254,24 +161,22 @@ export const itemRouter = createTRPCRouter({
             },
           };
 
-          const result = await model.generateContent({
-            systemInstruction: prompt,
+          const visionResponse = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            config: {
+              systemInstruction: prompt,
+            },
             contents: [
               {
-                role: "user",
-                parts: [
-                  {
-                    ...image,
-                  },
-                  {
-                    text: "Please describe this clothing item, without unnecessary introduction.",
-                  },
-                ],
+                ...image,
+              },
+              {
+                text: "Please describe this clothing item, without unnecessary introduction.",
               },
             ],
           });
 
-          item.description = result.response.text();
+          item.description = visionResponse.text ?? "";
         }
 
         if (!item.imageUrl) {
@@ -291,11 +196,13 @@ export const itemRouter = createTRPCRouter({
 
             const result = (await res.json()) as { token: string };
 
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             const status = await fetch(
               `https://upload.uploadcare.com/from_url/status?token=${result.token}`,
             );
 
-            const statusResult = (await status.json()) as {
+            let statusResult = (await status.json()) as {
               file_id: string;
               status: "success" | "error" | "progress";
               filename: string;
@@ -303,6 +210,19 @@ export const itemRouter = createTRPCRouter({
 
             if (statusResult.status === "error") {
               throw new Error("Failed to upload image to Uploadcare");
+            }
+
+            if (statusResult.status === "progress") {
+              await new Promise((resolve) => setTimeout(resolve, 500));
+
+              const renewedStatus = await fetch(
+                `https://upload.uploadcare.com/from_url/status?token=${result.token}`,
+              );
+              statusResult = (await renewedStatus.json()) as {
+                file_id: string;
+                status: "success" | "error" | "progress";
+                filename: string;
+              };
             }
 
             if (statusResult.status === "success") {
@@ -327,7 +247,12 @@ export const itemRouter = createTRPCRouter({
             title: item.title,
             image: item.image,
           },
-          update: {},
+          update: {
+            provider: item.merchant,
+            brand: item.brand,
+            title: item.title,
+            image: item.image,
+          },
         });
 
         return {

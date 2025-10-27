@@ -160,8 +160,11 @@ export const outfitRouter = createTRPCRouter({
 
       // Verify items against ResolvedItem records
       for (const item of items) {
-        const resolvedItem = await ctx.db.resolvedItem.findUnique({
+        const resolvedItem = await ctx.db.resolvedItem.findFirst({
           where: { url: item.url },
+          orderBy: {
+            createdAt: "desc",
+          },
         });
 
         if (!resolvedItem) {

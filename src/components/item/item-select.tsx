@@ -45,7 +45,7 @@ export function ItemSelect({
         }}
       >
         <SelectTrigger className="h-20">
-          <SelectValue placeholder="Select an existing item" />
+          <SelectValue placeholder="Select from fitgather's catalogue" />
         </SelectTrigger>
         <SelectContent>
           {isLoading && <Spinner />}
