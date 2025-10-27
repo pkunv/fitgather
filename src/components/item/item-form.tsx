@@ -73,7 +73,7 @@ export function ItemForm({
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (demo) {
-      toast.info("That's a demo though!");
+      toast.info("This is only a demo though!");
       return;
     }
 
@@ -108,7 +108,7 @@ export function ItemForm({
               <FormLabel>Item web address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="https://www.zalando.pl/polo-ralph-lauren-short-sleeve-koszulka-polo-athletic-green-multi-po222p0pi-m11.html"
+                  placeholder="https://www.shop.com/shirts/103-blue-striped-slim-fit"
                   readOnly={demo}
                   {...field}
                 />
