@@ -23,7 +23,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { TypographyMuted } from "@/components/ui/typography";
 import { addItem, deleteItem, getOutfitItems } from "@/lib/item";
 import { cn } from "@/lib/utils";
-import { User } from "@/server/api/trpc";
+import { type User } from "@/server/api/trpc";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
 import { Save, Trash2 } from "lucide-react";
