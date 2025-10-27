@@ -16,7 +16,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { itemSchema } from "@/trpc/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2 } from "lucide-react";
+import { Plus, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -47,7 +47,10 @@ export function ItemForm({
 }: {
   action: "create" | "update";
   selectedPiece: z.infer<typeof itemSchema.select>;
-  onItemCreate: (data: RouterOutputs["item"]["create"]) => void;
+  onItemCreate: (
+    data: RouterOutputs["item"]["create"],
+    isFromItemList?: boolean,
+  ) => void;
   onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
   demo?: boolean;
 }) {
@@ -132,13 +135,16 @@ export function ItemForm({
 
         <ItemSelect
           onSelect={(item) => {
-            // @ts-expect-error - TODO: fix this
-            onItemCreate({
-              ...item,
-              type: item.type as "head" | "top" | "bottom" | "shoes",
-              merchant: item.brand,
-              isClothing: true,
-            });
+            onItemCreate(
+              // @ts-expect-error - TODO: fix this
+              {
+                ...item,
+                type: item.type as "head" | "top" | "bottom" | "shoes",
+                merchant: item.brand,
+                isClothing: true,
+              },
+              true,
+            );
             form.setValue("url", item.url);
           }}
         />
@@ -156,13 +162,19 @@ export function ItemForm({
             </Button>
           )}
 
-          <Button type="submit">
+          <Button type="submit" className="gap-2">
             {createItem.isPending ? (
               <Spinner className="grayscale invert" />
             ) : action === "update" ? (
-              "Update"
+              <>
+                <Save />
+                Update
+              </>
             ) : (
-              "Add"
+              <>
+                <Plus />
+                Add
+              </>
             )}
           </Button>
         </div>

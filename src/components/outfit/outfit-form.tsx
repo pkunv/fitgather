@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 import { User } from "@/server/api/trpc";
 import { api, type RouterOutputs } from "@/trpc/react";
 import { type itemSchema, outfitSchema } from "@/trpc/schemas";
-import { Trash2 } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -147,8 +147,8 @@ export function OutfitForm({
                     : "create"
                 }
                 selectedPiece={selectedPiece}
-                onItemCreate={(callbackData) => {
-                  if (!selectedPiece) return;
+                onItemCreate={(callbackData, isFromItemList) => {
+                  if (!selectedPiece && !isFromItemList) return;
                   addItem({ setState: setOutfit, item: callbackData });
                   setSelectedPiece({
                     type: callbackData.type,
@@ -262,7 +262,7 @@ export function OutfitForm({
                     )}
 
                     <Button
-                      className="w-full"
+                      className="w-full gap-2"
                       disabled={getOutfitItems(outfit).length === 0}
                       onClick={() => {
                         action === "update" &&
@@ -283,7 +283,10 @@ export function OutfitForm({
                       {createOutfit.isPending || updateOutfit.isPending ? (
                         <Spinner className="grayscale invert" />
                       ) : (
-                        "Save outfit"
+                        <>
+                          <Save />
+                          Save outfit
+                        </>
                       )}
                     </Button>
                   </div>

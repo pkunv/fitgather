@@ -30,7 +30,7 @@ export function MenuItem({ item }: { item: HeaderLink }) {
           href={item.path!}
           className={cn(
             buttonVariants(item.button ?? { variant: "ghost" }),
-            "ml-4 w-fit items-center justify-stretch gap-4",
+            "relative z-10 ml-4 w-fit items-center justify-stretch gap-4 transition-all duration-200 ease-out",
             active ? "underline" : "",
           )}
         >
@@ -44,7 +44,7 @@ export function MenuItem({ item }: { item: HeaderLink }) {
         <LoginLink
           className={cn(
             buttonVariants(item.button ?? { variant: "ghost" }),
-            "ml-4 w-fit items-center justify-stretch gap-4",
+            "relative z-10 ml-4 w-fit items-center justify-stretch gap-4 transition-all duration-200 ease-out",
             active ? "bg-accent text-accent-foreground" : "",
           )}
         >
@@ -58,7 +58,7 @@ export function MenuItem({ item }: { item: HeaderLink }) {
         <RegisterLink
           className={cn(
             buttonVariants(item.button ?? { variant: "ghost" }),
-            "ml-4 w-fit items-center justify-stretch gap-4",
+            "relative z-10 ml-4 w-fit items-center justify-stretch gap-4 transition-all duration-200 ease-out",
             active ? "bg-accent text-accent-foreground" : "",
           )}
         >
@@ -72,7 +72,7 @@ export function MenuItem({ item }: { item: HeaderLink }) {
         <LogoutLink
           className={cn(
             buttonVariants(item.button ?? { variant: "ghost" }),
-            "ml-4 w-fit items-center justify-stretch gap-4",
+            "relative z-10 ml-4 w-fit items-center justify-stretch gap-4 transition-all duration-200 ease-out",
             active ? "bg-accent text-accent-foreground" : "",
           )}
         >

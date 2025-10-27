@@ -7,6 +7,8 @@ import {
   LogOut,
   Plus,
   Search,
+  Shirt,
+  Telescope,
   User2,
   UserRoundPlus,
   Wallet,
@@ -23,7 +25,9 @@ export type HeaderIcon =
   | "UserRoundPlus"
   | "Bell"
   | "Cog"
-  | "Plus";
+  | "Plus"
+  | "Telescope"
+  | "Shirt";
 
 export function HeaderIcon({
   icon,
@@ -46,6 +50,8 @@ export function HeaderIcon({
     Bell: Bell,
     Cog: Cog,
     Plus: Plus,
+    Telescope: Telescope,
+    Shirt: Shirt,
   };
 
   const Icon = iconMap[icon];

@@ -6,7 +6,9 @@ import { type Metadata } from "next";
 import Footer from "@/components/footer/_footer";
 import { Header } from "@/components/header/_header";
 import ModalSlot from "@/components/ui/modal-slot";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { Toaster } from "@/components/ui/sonner";
+import { env } from "@/env";
 import { TRPCReactProvider } from "@/trpc/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -28,7 +30,7 @@ export const metadata = {
     siteName: "fitgather",
     description:
       "Web app for creating and sharing outfits using E-Commerce clothing websites.",
-    url: new URL(`https://${process.env.VERCEL_URL}`),
+    url: new URL(`${env.KINDE_SITE_URL}`),
   },
 } as Metadata;
 
@@ -43,9 +45,10 @@ export default function RootLayout({
           <SpeedInsights />
           <Toaster />
           <ModalSlot>{modal}</ModalSlot>
+          <ScrollToTop />
           <div className="flex min-h-screen w-screen max-w-full flex-col">
             <Header />
-            <main className="mx-auto flex min-h-[65svh] w-full max-w-6xl flex-col items-center justify-start gap-6 px-6 py-6 sm:px-0">
+            <main className="mx-auto flex min-h-[65svh] w-full max-w-6xl flex-col items-center justify-start gap-6 px-6 py-6 pt-8 sm:px-0">
               {children}
             </main>
             <Footer />

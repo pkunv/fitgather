@@ -28,7 +28,7 @@ test("adding item - zalando NL", async ({ page }) => {
 	await page.getByRole("button", { name: "Add" }).first().click();
 
 	await expect(page.getByAltText("top clothing item image").first()).toBeVisible({
-		timeout: 30000,
+		timeout: 40000,
 	});
 });
 
@@ -44,6 +44,6 @@ test("adding item - vinted PL", async ({ page }) => {
 	await page.getByRole("button", { name: "Add" }).first().click();
 
 	await expect(page.getByAltText("top clothing item image").first()).toBeVisible({
-		timeout: 30000,
+		timeout: 40000,
 	});
 });

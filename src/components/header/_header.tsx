@@ -24,24 +24,29 @@ export async function Header() {
       button: { variant: "default" },
       type: "path",
       path: "/outfits",
+      icon: "Shirt",
     },
     {
       title: "Explore",
       type: "path",
       path: "/explore",
+      icon: "Telescope",
     },
     !isUserAuthenticated && {
       title: "Sign in",
       type: "signin",
+      icon: "LogIn",
     },
     !isUserAuthenticated && {
       title: "Sign up",
       type: "signup",
       button: { variant: "default" },
+      icon: "UserRoundPlus",
     },
     isUserAuthenticated && {
       title: "Sign out",
       type: "signout",
+      icon: "LogOut",
     },
   ].filter(Boolean) as HeaderLink[];
 
@@ -51,31 +56,38 @@ export async function Header() {
       button: { variant: "default" },
       type: "path",
       path: "/outfits",
+      icon: "Shirt",
     },
     {
       title: "Explore",
       type: "path",
       path: "/explore",
+      icon: "Telescope",
     },
     !isUserAuthenticated && {
       title: "Sign in",
       type: "signin",
+      icon: "LogIn",
     },
     !isUserAuthenticated && {
       title: "Sign up",
       type: "signup",
       button: { variant: "default" },
+      icon: "UserRoundPlus",
     },
     isUserAuthenticated && {
       title: "Sign out",
       type: "signout",
+      icon: "LogOut",
     },
   ].filter(Boolean) as HeaderLink[];
 
   return (
-    <header className="mx-auto flex w-full max-w-6xl flex-row justify-between gap-6 px-6 py-2 drop-shadow-sm sm:px-0">
-      <AppLogo />
-      <HeaderMenu headerLinks={headerLinks} sheetLinks={sheetLinks} />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto flex w-full max-w-6xl flex-row justify-between gap-6 px-6 py-2 sm:px-0">
+        <AppLogo />
+        <HeaderMenu headerLinks={headerLinks} sheetLinks={sheetLinks} />
+      </div>
     </header>
   );
 }
