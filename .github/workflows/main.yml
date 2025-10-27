@@ -15,26 +15,24 @@ jobs:
           node-version: lts/*
       - name: "Create env file"
         run: |
-          touch apps/www/.env
-          echo SKIP_ENV_VALIDATION="true" >> apps/www/.env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> apps/www/.env
-          echo DATABASE_URL_NON_POOLING=${{ secrets.DATABASE_URL_NON_POOLING }} >> apps/www/.env
-          echo E2E_PASSWORD=${{ secrets.E2E_PASSWORD }} >> apps/www/.env
-          echo E2E_USERNAME=${{ secrets.E2E_USERNAME }} >> apps/www/.env
-          echo KINDE_CLIENT_ID=${{ secrets.KINDE_CLIENT_ID }} >> apps/www/.env
-          echo KINDE_CLIENT_SECRET=${{ secrets.KINDE_CLIENT_SECRET }} >> apps/www/.env
-          echo KINDE_ISSUER_URL=${{ secrets.KINDE_ISSUER_URL }} >> apps/www/.env
-          echo KINDE_POST_LOGIN_REDIRECT_URL=${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }} >> apps/www/.env
-          echo KINDE_POST_LOGOUT_REDIRECT_URL=${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }} >> apps/www/.env
-          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }} >> apps/www/.env
-          echo UPLOADCARE_PUBLIC_KEY=${{ secrets.UPLOADCARE_PUBLIC_KEY }} >> apps/www/.env
-          echo SPATULA_URL=${{ secrets.SPATULA_URL }} >> apps/www/.env
-          echo SPATULA_API_KEY=${{ secrets.SPATULA_API_KEY }} >> apps/www/.env
-          cat apps/www/.env
+          touch .env
+          echo SKIP_ENV_VALIDATION="true" >> .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo DATABASE_URL_NON_POOLING=${{ secrets.DATABASE_URL_NON_POOLING }} >> .env
+          echo E2E_PASSWORD=${{ secrets.E2E_PASSWORD }} >> .env
+          echo E2E_USERNAME=${{ secrets.E2E_USERNAME }} >> .env
+          echo KINDE_CLIENT_ID=${{ secrets.KINDE_CLIENT_ID }} >> .env
+          echo KINDE_CLIENT_SECRET=${{ secrets.KINDE_CLIENT_SECRET }} >> .env
+          echo KINDE_ISSUER_URL=${{ secrets.KINDE_ISSUER_URL }} >> .env
+          echo KINDE_POST_LOGIN_REDIRECT_URL=${{ secrets.KINDE_POST_LOGIN_REDIRECT_URL }} >> .env
+          echo KINDE_POST_LOGOUT_REDIRECT_URL=${{ secrets.KINDE_POST_LOGOUT_REDIRECT_URL }} >> .env
+          echo KINDE_SITE_URL=${{ secrets.KINDE_SITE_URL }} >> .env
+          echo UPLOADCARE_PUBLIC_KEY=${{ secrets.UPLOADCARE_PUBLIC_KEY }} >> .env
+          echo AI_STUDIO_API_KEY=${{ secrets.AI_STUDIO_API_KEY }} >> .env
+          echo ZYTE_API_KEY=${{ secrets.ZYTE_API_KEY }} >> .env
+          cat .env
       - name: Install dependencies
         run: npm ci --workspace apps/www --force
-      - name: Migrate Prisma
-        run: npm run www:db:migrate
       - name: Push Prisma
         run: npm run www:db:push
       - name: Install Playwright Browsers
