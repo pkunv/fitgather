@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getOutfitItems } from "@/lib/item";
+import { getOutfitItems } from "@/lib/utils";
 import { type RouterOutputs } from "@/trpc/react";
 import Image from "next/image";
 import Link from "next/link";

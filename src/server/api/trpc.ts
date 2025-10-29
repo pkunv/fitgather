@@ -10,6 +10,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { env } from "@/env";
 import { db } from "@/server/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { KindeUserProperties } from "@kinde-oss/kinde-auth-nextjs/types";
@@ -142,4 +143,15 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
+});
+
+export const interfaceProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const apiKey = ctx.headers.get("Authorization");
+  if (!env.API_KEY) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+  }
+  if (apiKey !== `Key ${env.API_KEY}`) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({ ctx });
 });

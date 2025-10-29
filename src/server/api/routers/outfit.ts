@@ -1,4 +1,4 @@
-import { getOutfitFromItems, getOutfitItems } from "@/lib/item";
+import { getOutfitFromItems, getOutfitItems } from "@/lib/utils";
 import {
   createTRPCRouter,
   protectedProcedure,

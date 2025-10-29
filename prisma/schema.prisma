@@ -40,7 +40,7 @@ model Item {
     // Item types that are supported: 'head', 'top', 'shoes', 'bottom'
     type        String
     accessory   Boolean
-    provider    String // merchant from Spatula
+    provider    String // merchant
     url         String   @unique
     brand       String
     title       String
@@ -48,12 +48,20 @@ model Item {
     price       Int
     currency    String
     description String?
-    userId      String
+    userId      String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    user    User          @relation(fields: [userId], references: [id])
+    user    User?         @relation(fields: [userId], references: [id])
     outfits OutfitItems[]
+}
+
+model Trend {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }
 
 model Outfit {

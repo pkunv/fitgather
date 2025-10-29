@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH2, TypographyMuted } from "@/components/ui/typography";
-import { providers } from "@/lib/provider";
+import { providers } from "@/lib/item/providers";
 import { cn } from "@/lib/utils";
 import { Check, X } from "lucide-react";
 import type { Metadata } from "next";
