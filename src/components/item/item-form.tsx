@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
 
-const formSchema = itemSchema.create;
+const formSchema = itemSchema.add;
 
 const loadingMessages = [
   "Inspecting fabric quality...",
@@ -48,7 +48,7 @@ export function ItemForm({
   action: "create" | "update";
   selectedPiece: z.infer<typeof itemSchema.select>;
   onItemCreate: (
-    data: RouterOutputs["item"]["create"],
+    data: RouterOutputs["item"]["add"],
     isFromItemList?: boolean,
   ) => void;
   onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
@@ -63,7 +63,7 @@ export function ItemForm({
     },
   });
 
-  const createItem = api.item.create.useMutation({
+  const createItem = api.item.add.useMutation({
     onSuccess: async (data) => {
       toast.success("Your item has been added!");
       form.reset();

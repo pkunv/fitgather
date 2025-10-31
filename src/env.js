@@ -20,6 +20,7 @@ export const env = createEnv({
     UPLOADCARE_PUBLIC_KEY: z.string(),
     ZYTE_API_KEY: z.string(),
     AI_STUDIO_API_KEY: z.string(),
+    API_KEY: z.string().optional(),
   },
 
   /**
@@ -47,6 +48,7 @@ export const env = createEnv({
     UPLOADCARE_PUBLIC_KEY: process.env.UPLOADCARE_PUBLIC_KEY,
     ZYTE_API_KEY: process.env.ZYTE_API_KEY,
     AI_STUDIO_API_KEY: process.env.AI_STUDIO_API_KEY,
+    API_KEY: process.env.API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

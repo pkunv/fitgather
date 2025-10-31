@@ -21,6 +21,11 @@ export const itemSchema = {
     url: z
       .string({ message: "URL address of clothing item is required." })
       .url({ message: "URL address of clothing item is invalid." }),
+  }),
+  add: z.object({
+    url: z
+      .string({ message: "URL address of clothing item is required." })
+      .url({ message: "URL address of clothing item is invalid." }),
     type: itemTypeSchema,
     accessory: z.boolean(),
   }),
