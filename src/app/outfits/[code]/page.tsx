@@ -2,7 +2,7 @@ import { Outfit } from "@/components/outfit/outfit";
 import { OutfitForm } from "@/components/outfit/outfit-form";
 import { OutfitSummary } from "@/components/outfit/outfit-summary";
 import { OutfitSummaryTable } from "@/components/outfit/outfit-summary-table";
-import { getOutfitItems } from "@/lib/item";
+import { getOutfitItems } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Separator } from "@radix-ui/react-separator";
