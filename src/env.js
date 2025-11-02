@@ -21,6 +21,7 @@ export const env = createEnv({
     ZYTE_API_KEY: z.string(),
     AI_STUDIO_API_KEY: z.string(),
     API_KEY: z.string().optional(),
+    SPATULA_URL: z.string().url(),
   },
 
   /**
@@ -49,6 +50,7 @@ export const env = createEnv({
     ZYTE_API_KEY: process.env.ZYTE_API_KEY,
     AI_STUDIO_API_KEY: process.env.AI_STUDIO_API_KEY,
     API_KEY: process.env.API_KEY,
+    SPATULA_URL: process.env.SPATULA_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

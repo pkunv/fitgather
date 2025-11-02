@@ -15,8 +15,13 @@ export type HeaderLink = {
 export async function Header() {
   // We directly use Kinde Auth function instead of tRPC calls
   // to return ctx.session for better response time.
-  const { isAuthenticated } = getKindeServerSession();
+  const { isAuthenticated, getPermissions } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();
+  const permissions = await getPermissions();
+
+  const isAdmin = permissions?.permissions.includes("spatula-queue")
+    ? true
+    : false;
 
   const headerLinks: HeaderLink[] = [
     isUserAuthenticated && {
@@ -42,6 +47,12 @@ export async function Header() {
       type: "signup",
       button: { variant: "default" },
       icon: "UserRoundPlus",
+    },
+    isAdmin && {
+      title: "Admin panel",
+      type: "path",
+      path: "/admin-panel",
+      icon: "Cog",
     },
     isUserAuthenticated && {
       title: "Sign out",
@@ -79,6 +90,12 @@ export async function Header() {
       title: "Sign out",
       type: "signout",
       icon: "LogOut",
+    },
+    isAdmin && {
+      title: "Admin panel",
+      type: "path",
+      path: "/admin",
+      icon: "Cog",
     },
   ].filter(Boolean) as HeaderLink[];
 

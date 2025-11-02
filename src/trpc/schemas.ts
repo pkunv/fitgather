@@ -62,3 +62,11 @@ export const outfitSchema = {
     { message: "You need to add at least one item to your outfit." },
   ),
 };
+
+export const queueSchema = {
+  addToQueue: z.object({
+    url: z
+      .string({ message: "URL address is required." })
+      .url({ message: "URL address is invalid." }),
+  }),
+};

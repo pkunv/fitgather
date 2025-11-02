@@ -1,19 +1,56 @@
+import { env } from "@/env";
 import { getItem } from "@/lib/item/get";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { itemSchema } from "@/trpc/schemas";
+import { itemSchema, queueSchema } from "@/trpc/schemas";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
   getMany: publicProcedure
-    .input(z.object({ title: z.string().optional() }))
+    .input(z.object({ query: z.string().optional() }))
     .query(async ({ input, ctx }) => {
+      if (!input.query) {
+        return await ctx.db.item.findMany({
+          orderBy: {
+            updatedAt: "desc",
+          },
+          take: 50,
+        });
+      }
+
       return await ctx.db.item.findMany({
         where: {
-          title: {
-            contains: input.title,
-          },
+          OR: [
+            {
+              title: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              brand: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              provider: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
+        orderBy: {
+          updatedAt: "desc",
+        },
+        take: 50,
       });
     }),
   create: publicProcedure
@@ -47,6 +84,7 @@ export const itemRouter = createTRPCRouter({
   add: publicProcedure
     .input(itemSchema.add)
     .mutation(async ({ ctx, input }) => {
+      ctx.session?.roles;
       // Check rate limit before proceeding using ResolvedItem timestamps
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
@@ -111,6 +149,49 @@ export const itemRouter = createTRPCRouter({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "No clothing item found!",
+          cause: error,
+        });
+      }
+    }),
+  addToQueue: publicProcedure
+    .input(queueSchema.addToQueue)
+    .mutation(async ({ ctx, input }) => {
+      // Check if user is admin
+      const permissions = ctx.session?.permissions;
+      const isAdmin = permissions?.permissions.includes("spatula-queue");
+
+      if (!isAdmin) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only admins can add items to the queue.",
+        });
+      }
+
+      // Make POST request to Spatula queue
+      try {
+        const response = await fetch(`${env.SPATULA_URL}/queue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Key ${env.API_KEY}`,
+          },
+          body: JSON.stringify({ url: input.url }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `Spatula API responded with status ${response.status}: ${errorText}`,
+          );
+        }
+
+        const data = (await response.json()) as { success: boolean };
+        return data;
+      } catch (error) {
+        console.log("Adding to queue failed: ", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to add item to queue.",
           cause: error,
         });
       }
