@@ -160,33 +160,39 @@ export const outfitRouter = createTRPCRouter({
 
       // Verify items against ResolvedItem records
       for (const item of items) {
-        const resolvedItem = await ctx.db.resolvedItem.findFirst({
+        const itemDb = await ctx.db.item.findUnique({
           where: { url: item.url },
-          orderBy: {
-            createdAt: "desc",
-          },
         });
 
-        if (!resolvedItem) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "One or more items have not been properly resolved. Please try adding them again.",
+        if (!itemDb) {
+          const resolvedItem = await ctx.db.resolvedItem.findFirst({
+            where: { url: item.url },
+            orderBy: {
+              createdAt: "desc",
+            },
           });
-        }
 
-        // Check if all properties match what was resolved
-        if (
-          resolvedItem.provider !== item.provider ||
-          resolvedItem.brand !== item.brand ||
-          resolvedItem.title !== item.title ||
-          resolvedItem.image !== item.image
-        ) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "Item properties do not match what was previously resolved. Please try adding the item again.",
-          });
+          if (!resolvedItem) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "One or more items have not been properly resolved. Please try adding them again.",
+            });
+          }
+
+          // Check if all properties match what was resolved
+          if (
+            resolvedItem.provider !== item.provider ||
+            resolvedItem.brand !== item.brand ||
+            resolvedItem.title !== item.title ||
+            resolvedItem.image !== item.image
+          ) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Item properties do not match what was previously resolved. Please try adding the item again.",
+            });
+          }
         }
       }
 
