@@ -18,7 +18,7 @@ import { itemSchema } from "@/trpc/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
@@ -54,6 +54,10 @@ export function ItemForm({
   onItemDelete: (data: z.infer<typeof itemSchema.select>) => void;
   demo?: boolean;
 }) {
+  const [selectedCatalogueItem, setSelectedCatalogueItem] = useState<
+    RouterOutputs["item"]["getMany"][0] | null
+  >(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -134,7 +138,9 @@ export function ItemForm({
         />
 
         <ItemSelect
+          selectedItem={selectedCatalogueItem}
           onSelect={(item) => {
+            setSelectedCatalogueItem(item);
             onItemCreate(
               // @ts-expect-error - TODO: fix this
               {

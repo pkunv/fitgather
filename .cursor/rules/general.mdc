@@ -1,0 +1,280 @@
+---
+alwaysApply: true
+---
+
+---
+
+## alwaysApply: true
+
+You are a specialised NEXT.js 15 senior developer that works on a outfit creation platform. Here are general guidelines that we need to follow:
+
+## General
+
+- Always use kebab-case for folder and file naming.
+
+- React server and client components include in `src/components`
+
+- Functions etc. include in `src/lib`
+
+## Styling
+
+- Always use Shadcn/ui for choosing components and elements for UI/UX creation. Refer to its docs whenever possible.
+
+- Keep UI elegant and simple
+
+- Use consistent spacing of gap-6.
+
+- Always use `lucide-react` library for icons.
+
+- Inside a button include appropriate icon on the left.
+
+## Features and back-end structure
+
+- Always refer to schema.prisma to get latest schema of our database.
+
+- Remember that an tRPC endpoint could be used later, so make it extendable and universal as possible by adding query options and
+  universal Zod schema inside `src/trpc/schemas.ts`
+
+- First create a full-fledged function inside `src/lib` directory. If feature is more complex, create
+  a separate folder in `src/lib` and there insert appropriate functions, for example: `src/lib/user/create.ts -> createUser()`.
+
+- Connect feature functions to a new or existing tRPC endpoint router, inside `src/server/api/routers` directory.
+  These are connected to main tRPC router that we can use freely in NEXT.js server-side or client-side.
+  Always use `tryCatch()` function to catch errors from feature functions so that we can return an error code like 400.
+  For example:
+
+```typescript
+// src/lib/post/create.ts
+
+async function createPost(post: CreatePostParams) {
+  if (post.title.includes("swear word")) {
+    throw new Error("Post contains a swear word!", { code: 400 });
+  }
+
+  return await ctx.db.post.create({
+    data: {
+      name: post.name,
+    },
+  });
+}
+
+// src/server/api/routers/post.ts
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+
+export const postRouter = createTRPCRouter({
+  hello: publicProcedure
+    .input(z.object({ text: z.string() }))
+    .query(({ input }) => {
+      return {
+        greeting: `Hello ${input.text}`,
+      };
+    }),
+
+  create: publicProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { data, error } = await tryCatch(createPost(input));
+
+      if (error) {
+        throw new TRPCError({
+          code: error.code || 500,
+          message: error.message,
+        });
+      }
+
+      return data;
+    }),
+
+  getLatest: publicProcedure.query(async ({ ctx }) => {
+    const post = await ctx.db.post.findFirst({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return post ?? null;
+  }),
+});
+```
+
+```typescript
+// src/server/api/root.ts
+import { postRouter } from "@/server/api/routers/post";
+import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+
+/**
+ * This is the primary router for your server.
+ *
+ * All routers added in /api/routers should be manually added here.
+ */
+export const appRouter = createTRPCRouter({
+  post: postRouter,
+});
+
+// export type definition of API
+export type AppRouter = typeof appRouter;
+
+/**
+ * Create a server-side caller for the tRPC API.
+ * @example
+ * const trpc = createCaller(createContext);
+ * const res = await trpc.post.all();
+ *       ^? Post[]
+ */
+export const createCaller = createCallerFactory(appRouter);
+```
+
+When creating a form to connect this feature, use React Hook Form in a way like this for example:
+
+```typescript
+"use client"
+
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import * as z from "zod"
+
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
+
+const formSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Bug title must be at least 5 characters.")
+    .max(32, "Bug title must be at most 32 characters."),
+  description: z
+    .string()
+    .min(20, "Description must be at least 20 characters.")
+    .max(100, "Description must be at most 100 characters."),
+})
+
+export function BugReportForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+    },
+  })
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    toast("You submitted the following values:", {
+      description: (
+        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
+          <code>{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+      position: "bottom-right",
+      classNames: {
+        content: "flex flex-col gap-2",
+      },
+      style: {
+        "--border-radius": "calc(var(--radius)  + 4px)",
+      } as React.CSSProperties,
+    })
+  }
+
+  return (
+    <Card className="w-full sm:max-w-md">
+      <CardHeader>
+        <CardTitle>Bug Report</CardTitle>
+        <CardDescription>
+          Help us improve by reporting bugs you encounter.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldGroup>
+            <Controller
+              name="title"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-demo-title">
+                    Bug Title
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="form-rhf-demo-title"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Login button not working on mobile"
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="description"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-demo-description">
+                    Description
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupTextarea
+                      {...field}
+                      id="form-rhf-demo-description"
+                      placeholder="I'm having an issue with the login button on mobile."
+                      rows={6}
+                      className="min-h-24 resize-none"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon align="block-end">
+                      <InputGroupText className="tabular-nums">
+                        {field.value.length}/100 characters
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <FieldDescription>
+                    Include steps to reproduce, expected behavior, and what
+                    actually happened.
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+        </form>
+      </CardContent>
+      <CardFooter>
+        <Field orientation="horizontal">
+          <Button type="button" variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button type="submit" form="form-rhf-demo">
+            Submit
+          </Button>
+        </Field>
+      </CardFooter>
+    </Card>
+  )
+}
+```

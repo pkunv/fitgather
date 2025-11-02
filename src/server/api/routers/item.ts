@@ -7,14 +7,50 @@ import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
   getMany: publicProcedure
-    .input(z.object({ title: z.string().optional() }))
+    .input(z.object({ query: z.string().optional() }))
     .query(async ({ input, ctx }) => {
+      if (!input.query) {
+        return await ctx.db.item.findMany({
+          orderBy: {
+            updatedAt: "desc",
+          },
+          take: 50,
+        });
+      }
+
       return await ctx.db.item.findMany({
         where: {
-          title: {
-            contains: input.title,
-          },
+          OR: [
+            {
+              title: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              brand: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              provider: {
+                contains: input.query,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
+        orderBy: {
+          updatedAt: "desc",
+        },
+        take: 50,
       });
     }),
   create: publicProcedure
